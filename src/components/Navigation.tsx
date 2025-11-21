@@ -1,5 +1,5 @@
 import { NavLink } from "@/components/NavLink";
-import { LayoutDashboard, Gauge, Bell, Calendar, TrendingUp, FileText } from "lucide-react";
+import { LayoutDashboard, Gauge, Bell, Calendar, TrendingUp, FileText, User, Scale } from "lucide-react";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -8,6 +8,8 @@ const navItems = [
   { to: "/termine", icon: Calendar, label: "Termine" },
   { to: "/verbrauch", icon: TrendingUp, label: "Verbrauch" },
   { to: "/antraege", icon: FileText, label: "Anträge" },
+  { to: "/meine-daten", icon: User, label: "Meine Daten" },
+  { to: "/rechtliches", icon: Scale, label: "Rechtliches" },
 ];
 
 export const Navigation = () => {

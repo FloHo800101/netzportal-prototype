@@ -1,5 +1,7 @@
 import { DashboardCard } from "@/components/DashboardCard";
 import { StatusTimeline } from "@/components/StatusTimeline";
+import { NotificationsPreview } from "@/components/NotificationsPreview";
+import { ChatBot } from "@/components/ChatBot";
 import { Gauge, Bell, Calendar, TrendingUp, FileText } from "lucide-react";
 
 const Dashboard = () => {
@@ -48,11 +50,17 @@ const Dashboard = () => {
           <StatusTimeline />
         </div>
 
+        <div className="mb-8">
+          <NotificationsPreview />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {cards.map((card, index) => (
             <DashboardCard key={index} {...card} />
           ))}
         </div>
+
+        <ChatBot />
       </div>
     </div>
   );
