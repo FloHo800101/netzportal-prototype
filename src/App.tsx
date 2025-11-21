@@ -10,6 +10,8 @@ import Nachrichten from "./pages/Nachrichten";
 import Termine from "./pages/Termine";
 import Verbrauch from "./pages/Verbrauch";
 import Antraege from "./pages/Antraege";
+import MeineDaten from "./pages/MeineDaten";
+import Rechtliches from "./pages/Rechtliches";
 import NeueAnlage from "./pages/antrag/NeueAnlage";
 import NotFound from "./pages/NotFound";
 
@@ -29,6 +31,8 @@ const App = () => (
           <Route path="/termine" element={<Termine />} />
           <Route path="/verbrauch" element={<Verbrauch />} />
           <Route path="/antraege" element={<Antraege />} />
+          <Route path="/meine-daten" element={<MeineDaten />} />
+          <Route path="/rechtliches" element={<Rechtliches />} />
           <Route path="/antrag/neue-anlage" element={<NeueAnlage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
