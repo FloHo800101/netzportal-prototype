@@ -2,9 +2,12 @@ import { DashboardCard } from "@/components/DashboardCard";
 import { StatusTimeline } from "@/components/StatusTimeline";
 import { NotificationsPreview } from "@/components/NotificationsPreview";
 import { ChatBot } from "@/components/ChatBot";
+import { useAuth } from "@/contexts/AuthContext";
 import { Gauge, Bell, Calendar, TrendingUp, FileText } from "lucide-react";
 
 const Dashboard = () => {
+  const { role } = useAuth();
+  
   const cards = [
     {
       title: "Zählerstandsablesung & Meldung",
@@ -38,12 +41,39 @@ const Dashboard = () => {
     },
   ];
 
+  const getGreeting = () => {
+    switch (role) {
+      case "kunde":
+        return {
+          title: "Willkommen in Ihrem Energieportal, Frau Müller",
+          subtitle: "Verwalten Sie Ihre Anschlüsse und Anträge",
+        };
+      case "installateur":
+        return {
+          title: "Willkommen zurück, Herr Schmidt",
+          subtitle: "Übersicht Ihrer Installationsprojekte",
+        };
+      case "kundenbetreuer":
+        return {
+          title: "Willkommen zurück, Herr Weber",
+          subtitle: "Kundenbetreuung und Verwaltung",
+        };
+      default:
+        return {
+          title: "Willkommen im Netzportal",
+          subtitle: "Ihr Self-Service-Portal",
+        };
+    }
+  };
+
+  const greeting = getGreeting();
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Willkommen im Netzportal</h1>
-          <p className="text-muted-foreground">Ihr Self-Service-Portal für alle Netzbetreiber-Dienstleistungen</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">{greeting.title}</h1>
+          <p className="text-muted-foreground">{greeting.subtitle}</p>
         </div>
 
         <div className="mb-8">
