@@ -17,6 +17,7 @@ import Antraege from "./pages/Antraege";
 import MeineDaten from "./pages/MeineDaten";
 import Rechtliches from "./pages/Rechtliches";
 import NeueAnlage from "./pages/antrag/NeueAnlage";
+import AdminSetup from "./pages/AdminSetup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -53,6 +54,7 @@ const App = () => (
                             <Route path="/meine-daten" element={<MeineDaten />} />
                             <Route path="/rechtliches" element={<Rechtliches />} />
                             <Route path="/antrag/neue-anlage" element={<NeueAnlage />} />
+                            <Route path="/admin/setup" element={<AdminSetup />} />
                             <Route path="*" element={<NotFound />} />
                           </Routes>
                         </main>
