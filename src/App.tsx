@@ -7,6 +7,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { RoleSwitcher } from "@/components/RoleSwitcher";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Zaehlerstand from "./pages/Zaehlerstand";
@@ -43,6 +44,7 @@ const App = () => (
                         <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 lg:px-6">
                           <SidebarTrigger />
                           <div className="flex-1" />
+                          <RoleSwitcher />
                         </header>
                         <main className="flex-1">
                           <Routes>
