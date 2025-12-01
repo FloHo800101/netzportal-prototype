@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Gauge, Bell, Calendar, TrendingUp, FileText } from "lucide-react";
 
 const Dashboard = () => {
-  const { role, user } = useAuth();
+  const { activeRole, user } = useAuth();
   
   const cards = [
     {
@@ -47,7 +47,7 @@ const Dashboard = () => {
     const lastName = user?.user_metadata?.last_name || "";
     const fullName = `${firstName} ${lastName}`.trim();
     
-    switch (role) {
+    switch (activeRole) {
       case "kunde":
         return {
           title: `Willkommen in Ihrem Energieportal${fullName ? `, ${fullName}` : ""}`,
@@ -81,7 +81,7 @@ const Dashboard = () => {
           <p className="text-muted-foreground">{greeting.subtitle}</p>
         </div>
 
-        {role === "kunde" && (
+        {activeRole === "kunde" && (
           <>
             <div className="mb-8">
               <StatusTimeline />
@@ -93,7 +93,7 @@ const Dashboard = () => {
           </>
         )}
 
-        {role === "installateur" && (
+        {activeRole === "installateur" && (
           <div className="mb-8 p-6 bg-card rounded-lg border">
             <h2 className="text-xl font-semibold mb-4">Ihre Installationsprojekte</h2>
             <div className="space-y-3">
@@ -121,7 +121,7 @@ const Dashboard = () => {
           </div>
         )}
 
-        {role === "kundenbetreuer" && (
+        {activeRole === "kundenbetreuer" && (
           <div className="mb-8 p-6 bg-card rounded-lg border">
             <h2 className="text-xl font-semibold mb-4">Kundensuche</h2>
             <div className="grid gap-4 mb-6">
@@ -163,9 +163,9 @@ const Dashboard = () => {
           {cards
             .filter(card => {
               // Kundenbetreuer sehen alle Karten
-              if (role === "kundenbetreuer") return true;
+              if (activeRole === "kundenbetreuer") return true;
               // Installateur sieht nur relevante Bereiche
-              if (role === "installateur") {
+              if (activeRole === "installateur") {
                 return ["Anträge", "Termine", "Benachrichtigungen / Nachrichten", "Meine Daten"].includes(card.title);
               }
               // Kunde sieht alle Karten
