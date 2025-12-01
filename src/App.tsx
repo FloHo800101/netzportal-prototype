@@ -31,6 +31,7 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/auth" element={<Auth />} />
+            <Route path="/admin/setup" element={<AdminSetup />} />
             <Route
               path="/*"
               element={
