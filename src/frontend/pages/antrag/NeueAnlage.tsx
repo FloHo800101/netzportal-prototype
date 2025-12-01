@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/frontend/components/ui/card";
+import { Button } from "@/frontend/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { BasisdatenStep } from "./steps/BasisdatenStep";
 import { LageplanStep } from "./steps/LageplanStep";

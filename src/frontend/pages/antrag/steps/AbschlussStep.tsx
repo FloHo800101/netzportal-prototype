@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/frontend/components/ui/button";
 import { Check, Mail, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 

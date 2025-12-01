@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Check, Loader2 } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/frontend/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/frontend/components/ui/radio-group";
 
 export const NetzpruefungStep = () => {
   const [isChecking, setIsChecking] = useState(true);
