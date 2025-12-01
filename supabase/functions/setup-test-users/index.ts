@@ -54,48 +54,36 @@ Deno.serve(async (req) => {
       }
     )
 
-    const results = []
+    const results: any[] = []
 
     for (const user of testUsers) {
-      // Versuche bestehenden User zu löschen
-      try {
-        const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers()
-        const existingUser = existingUsers?.users?.find(u => u.email === user.email)
-        
-        if (existingUser) {
-          await supabaseAdmin.auth.admin.deleteUser(existingUser.id)
-          results.push({ email: user.email, action: 'deleted_existing' })
-        }
-      } catch (error) {
-        console.log(`Kein existierender User gefunden für ${user.email}`)
-      }
-
-      // Erstelle neuen User
-      const { data: newUser, error: signUpError } = await supabaseAdmin.auth.admin.createUser({
+      // Lege Test-User über den normalen Sign-Up-Flow an, um /admin/users zu vermeiden
+      const { data: signUpData, error: signUpError } = await supabaseAdmin.auth.signUp({
         email: user.email,
         password: user.password,
-        email_confirm: true,
-        user_metadata: {
-          first_name: user.firstName,
-          last_name: user.lastName,
-          role: user.role
-        }
+        options: {
+          data: {
+            first_name: user.firstName,
+            last_name: user.lastName,
+            role: user.role,
+          },
+        },
       })
 
       if (signUpError) {
-        results.push({ 
-          email: user.email, 
-          action: 'error', 
-          error: signUpError.message 
+        results.push({
+          email: user.email,
+          action: 'error',
+          error: signUpError.message,
         })
         continue
       }
 
-      results.push({ 
-        email: user.email, 
+      results.push({
+        email: user.email,
         action: 'created',
-        userId: newUser.user?.id,
-        role: user.role
+        userId: signUpData.user?.id,
+        role: user.role,
       })
     }
 
