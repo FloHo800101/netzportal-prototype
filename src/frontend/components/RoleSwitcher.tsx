@@ -1,5 +1,5 @@
-import { useAuth } from "@/contexts/AuthContext";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAuth } from "@/frontend/contexts/AuthContext";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/frontend/components/ui/select";
 import { UserCog } from "lucide-react";
 
 type AppRole = "kunde" | "installateur" | "kundenbetreuer";

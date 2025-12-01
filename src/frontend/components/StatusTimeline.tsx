@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/frontend/components/ui/card";
 import { Check, Circle } from "lucide-react";
 
 const steps = [

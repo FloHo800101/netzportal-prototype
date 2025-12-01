@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/frontend/components/ui/button";
 import { ExternalLink, Info } from "lucide-react";
 
 export const MarktstammdatenStep = () => {

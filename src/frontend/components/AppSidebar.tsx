@@ -1,8 +1,8 @@
 import { LayoutDashboard, Gauge, Bell, Calendar, TrendingUp, FileText, User, Scale, LogOut } from "lucide-react";
-import { NavLink } from "@/components/NavLink";
+import { NavLink } from "@/frontend/components/NavLink";
 import { useLocation } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
+import { useAuth } from "@/frontend/contexts/AuthContext";
+import { Button } from "@/frontend/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -15,7 +15,7 @@ import {
   SidebarHeader,
   SidebarFooter,
   useSidebar,
-} from "@/components/ui/sidebar";
+} from "@/frontend/components/ui/sidebar";
 
 type AppRole = "kunde" | "installateur" | "kundenbetreuer";
 

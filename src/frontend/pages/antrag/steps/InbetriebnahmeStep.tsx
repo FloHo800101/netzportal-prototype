@@ -1,5 +1,5 @@
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/frontend/components/ui/input";
+import { Label } from "@/frontend/components/ui/label";
 import { Calendar, Check, Wrench, Power } from "lucide-react";
 
 export const InbetriebnahmeStep = () => {
