@@ -9,6 +9,8 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   role: AppRole | null;
+  activeRole: AppRole;
+  setActiveRole: (role: AppRole) => void;
   loading: boolean;
   signOut: () => Promise<void>;
 }
@@ -19,6 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
+  const [activeRole, setActiveRole] = useState<AppRole>("kunde");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -39,13 +42,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 .eq("user_id", session.user.id)
                 .single();
               
-              setRole(roleData?.role as AppRole || null);
+              const fetchedRole = roleData?.role as AppRole || null;
+              setRole(fetchedRole);
+              if (fetchedRole) {
+                setActiveRole(fetchedRole);
+              }
             } catch (error) {
               console.error("Error fetching role:", error);
             }
           }, 0);
         } else {
           setRole(null);
+          setActiveRole("kunde");
         }
         
         setLoading(false);
@@ -66,13 +74,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               .eq("user_id", session.user.id)
               .single();
             
-            setRole(roleData?.role as AppRole || null);
+            const fetchedRole = roleData?.role as AppRole || null;
+            setRole(fetchedRole);
+            if (fetchedRole) {
+              setActiveRole(fetchedRole);
+            }
           } catch (error) {
             console.error("Error fetching role:", error);
           }
           setLoading(false);
         }, 0);
       } else {
+        setActiveRole("kunde");
         setLoading(false);
       }
     });
@@ -85,11 +98,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setSession(null);
     setRole(null);
+    setActiveRole("kunde");
     navigate("/auth");
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, role, loading, signOut }}>
+    <AuthContext.Provider value={{ user, session, role, activeRole, setActiveRole, loading, signOut }}>
       {children}
     </AuthContext.Provider>
   );
