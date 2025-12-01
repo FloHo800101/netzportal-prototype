@@ -43,22 +43,22 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const supabaseAdmin = createClient(
+    const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
         auth: {
           autoRefreshToken: false,
-          persistSession: false
-        }
+          persistSession: false,
+        },
       }
     )
 
     const results: any[] = []
 
     for (const user of testUsers) {
-      // Lege Test-User über den normalen Sign-Up-Flow an, um /admin/users zu vermeiden
-      const { data: signUpData, error: signUpError } = await supabaseAdmin.auth.signUp({
+      // Lege Test-User über den normalen Sign-Up-Flow an, um /signup zu nutzen
+      const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
         email: user.email,
         password: user.password,
         options: {
