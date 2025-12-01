@@ -1,9 +1,9 @@
-import { DashboardCard } from "@/components/DashboardCard";
-import { StatusTimeline } from "@/components/StatusTimeline";
-import { NotificationsPreview } from "@/components/NotificationsPreview";
-import { ChatBot } from "@/components/ChatBot";
-import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
+import { DashboardCard } from "@/frontend/components/DashboardCard";
+import { StatusTimeline } from "@/frontend/components/StatusTimeline";
+import { NotificationsPreview } from "@/frontend/components/NotificationsPreview";
+import { ChatBot } from "@/frontend/components/ChatBot";
+import { useAuth } from "@/frontend/contexts/AuthContext";
+import { Button } from "@/frontend/components/ui/button";
 import { Gauge, Bell, Calendar, TrendingUp, FileText } from "lucide-react";
 
 const Dashboard = () => {

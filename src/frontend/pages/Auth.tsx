@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/frontend/components/ui/button";
+import { Input } from "@/frontend/components/ui/input";
+import { Label } from "@/frontend/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/frontend/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/frontend/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/frontend/components/ui/select";
+import { useToast } from "@/frontend/hooks/use-toast";
 import { Zap } from "lucide-react";
 
 type AppRole = "kunde" | "installateur" | "kundenbetreuer";
