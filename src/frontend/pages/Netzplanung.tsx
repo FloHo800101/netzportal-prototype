@@ -1,6 +1,6 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/frontend/components/ui/card";
-import { Button } from "@/frontend/components/ui/button";
-import { Input } from "@/frontend/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 import { Search, User, MapPin, Phone, Mail } from "lucide-react";
 import { useState } from "react";
 
