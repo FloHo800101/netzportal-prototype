@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/frontend/components/ui/card";
-import { Badge } from "@/frontend/components/ui/badge";
-import { Button } from "@/frontend/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 import { Bell, TrendingUp, Calendar, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -58,19 +58,19 @@ export const NotificationsPreview = () => {
               <div
                 className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                   notification.type === "warning"
-                    ? "bg-status-warning/10"
+                    ? "bg-orange-100 dark:bg-orange-900/20"
                     : notification.type === "success"
-                    ? "bg-status-success/10"
-                    : "bg-status-info/10"
+                    ? "bg-green-100 dark:bg-green-900/20"
+                    : "bg-blue-100 dark:bg-blue-900/20"
                 }`}
               >
                 <Icon
                   className={`w-5 h-5 ${
                     notification.type === "warning"
-                      ? "text-status-warning"
+                      ? "text-orange-600 dark:text-orange-400"
                       : notification.type === "success"
-                      ? "text-status-success"
-                      : "text-status-info"
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-blue-600 dark:text-blue-400"
                   }`}
                 />
               </div>

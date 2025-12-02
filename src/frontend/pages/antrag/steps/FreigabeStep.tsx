@@ -1,6 +1,11 @@
-import { Check, MapPin, Zap, Settings } from "lucide-react";
+import { Check, MapPin, Zap, Settings, CreditCard, FileText, User } from "lucide-react";
 
-export const FreigabeStep = () => {
+interface FreigabeStepProps {
+  data: any;
+  onDataChange: (data: any) => void;
+}
+
+export const FreigabeStep = ({ data }: FreigabeStepProps) => {
   return (
     <div className="space-y-6">
       <div className="bg-status-success/10 border border-status-success rounded-lg p-6 text-center space-y-3">
@@ -52,6 +57,37 @@ export const FreigabeStep = () => {
             Zweirichtungszähler mit separater Erfassung von Bezug und Einspeisung
           </p>
         </div>
+
+        {data?.installateursauswahl?.installer && (
+          <div className="border border-border rounded-lg p-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <User className="w-5 h-5 text-primary" />
+              <h4 className="font-medium">Installateur</h4>
+            </div>
+            <div className="text-sm text-muted-foreground ml-7 space-y-1">
+              <p><strong>{data.installateursauswahl.installer.name}</strong></p>
+              <p>{data.installateursauswahl.installer.address}</p>
+              <p>Tel: {data.installateursauswahl.installer.phone}</p>
+            </div>
+          </div>
+        )}
+
+        {data?.auszahlungseinstellungen && (
+          <div className="border border-border rounded-lg p-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-primary" />
+              <h4 className="font-medium">Auszahlungseinstellungen</h4>
+            </div>
+            <div className="text-sm text-muted-foreground ml-7 space-y-1">
+              <p>IBAN: {data.auszahlungseinstellungen.iban}</p>
+              <p>Kontoinhaber: {data.auszahlungseinstellungen.accountHolder}</p>
+              <p>Kleinunternehmerregelung: {data.auszahlungseinstellungen.kleinunternehmer ? 'Ja' : 'Nein'}</p>
+              {data.auszahlungseinstellungen.kleinunternehmer && data.auszahlungseinstellungen.steuernummer && (
+                <p>Steuernummer: {data.auszahlungseinstellungen.steuernummer}</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="bg-primary-light rounded-lg p-4 space-y-2">

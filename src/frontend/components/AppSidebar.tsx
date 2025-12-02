@@ -1,8 +1,8 @@
-import { LayoutDashboard, Gauge, Bell, Calendar, TrendingUp, FileText, User, Scale, LogOut, Network } from "lucide-react";
-import { NavLink } from "@/frontend/components/NavLink";
+import { LayoutDashboard, Gauge, Bell, Calendar, TrendingUp, FileText, User, Scale, LogOut, Network, Map, Zap, Info } from "lucide-react";
+import { NavLink } from "./NavLink";
 import { useLocation } from "react-router-dom";
-import { useAuth } from "@/frontend/contexts/AuthContext";
-import { Button } from "@/frontend/components/ui/button";
+import { useAuth } from "../contexts/AuthContext";
+import { Button } from "./ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -15,19 +15,20 @@ import {
   SidebarHeader,
   SidebarFooter,
   useSidebar,
-} from "@/frontend/components/ui/sidebar";
+} from "./ui/sidebar";
 
 type AppRole = "kunde" | "installateur" | "kundenbetreuer";
 
 const navigationItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard", end: true, roles: ["kunde", "installateur", "kundenbetreuer"] as AppRole[] },
-  { to: "/zaehlerstand", icon: Gauge, label: "Zählerstand", roles: ["kunde"] as AppRole[] },
-  { to: "/nachrichten", icon: Bell, label: "Nachrichten", roles: ["kunde", "installateur", "kundenbetreuer"] as AppRole[] },
-  { to: "/termine", icon: Calendar, label: "Termine", roles: ["kunde", "installateur", "kundenbetreuer"] as AppRole[] },
-  { to: "/verbrauch", icon: TrendingUp, label: "Verbrauch", roles: ["kunde"] as AppRole[] },
-  { to: "/antraege", icon: FileText, label: "Anträge", roles: ["kunde", "installateur", "kundenbetreuer"] as AppRole[] },
+  { to: "/nachrichten", icon: Bell, label: "Meine Benachrichtigungen", roles: ["kunde", "installateur", "kundenbetreuer"] as AppRole[] },
+  { to: "/termine", icon: Calendar, label: "Meine Termine", roles: ["kunde", "installateur", "kundenbetreuer"] as AppRole[] },
+  { to: "/verbrauch", icon: TrendingUp, label: "Mein Verbrauch und Einspeisung", roles: ["kunde"] as AppRole[] },
+  { to: "/meine-anschluesse", icon: Zap, label: "Meine Anschlüsse & Verträge", roles: ["kunde"] as AppRole[] },
+  { to: "/antraege", icon: FileText, label: "Anträge stellen", roles: ["kunde", "kundenbetreuer"] as AppRole[] },
+  { to: "/antraege/installateur", icon: FileText, label: "Installateur-Anträge", roles: ["installateur"] as AppRole[] },
+  { to: "/netzkarte", icon: Info, label: "Infos zum Netz", roles: ["kunde"] as AppRole[] },
   { to: "/netzplanung", icon: Network, label: "Netzplanung", roles: ["kundenbetreuer"] as AppRole[] },
-  { to: "/meine-daten", icon: User, label: "Meine Daten", roles: ["kunde", "installateur", "kundenbetreuer"] as AppRole[] },
   { to: "/rechtliches", icon: Scale, label: "Rechtliches", roles: ["kunde"] as AppRole[] },
 ];
 

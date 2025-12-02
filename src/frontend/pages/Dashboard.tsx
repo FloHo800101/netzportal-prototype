@@ -1,9 +1,9 @@
-import { DashboardCard } from "@/frontend/components/DashboardCard";
-import { StatusTimeline } from "@/frontend/components/StatusTimeline";
-import { NotificationsPreview } from "@/frontend/components/NotificationsPreview";
-import { ChatBot } from "@/frontend/components/ChatBot";
-import { useAuth } from "@/frontend/contexts/AuthContext";
-import { Button } from "@/frontend/components/ui/button";
+import { DashboardCard } from "../components/DashboardCard";
+import { StatusTimeline } from "../components/StatusTimeline";
+import { NotificationsPreview } from "../components/NotificationsPreview";
+import { ChatBot } from "../components/ChatBot";
+import { useAuth } from "../contexts/AuthContext";
+import { Button } from "../components/ui/button";
 import { Gauge, Bell, Calendar, TrendingUp, FileText } from "lucide-react";
 
 const Dashboard = () => {
@@ -158,23 +158,6 @@ const Dashboard = () => {
             </div>
           </div>
         )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {cards
-            .filter(card => {
-              // Kundenbetreuer sehen alle Karten
-              if (activeRole === "kundenbetreuer") return true;
-              // Installateur sieht nur relevante Bereiche
-              if (activeRole === "installateur") {
-                return ["Anträge", "Termine", "Benachrichtigungen / Nachrichten", "Meine Daten"].includes(card.title);
-              }
-              // Kunde sieht alle Karten
-              return true;
-            })
-            .map((card, index) => (
-              <DashboardCard key={index} {...card} />
-            ))}
-        </div>
 
         <ChatBot />
       </div>
