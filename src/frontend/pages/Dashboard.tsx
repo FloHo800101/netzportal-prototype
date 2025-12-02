@@ -159,24 +159,22 @@ const Dashboard = () => {
           </div>
         )}
 
-        {activeRole !== "kunde" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cards
-              .filter(card => {
-                // Kundenbetreuer sehen alle Karten
-                if (activeRole === "kundenbetreuer") return true;
-                // Installateur sieht nur relevante Bereiche
-                if (activeRole === "installateur") {
-                  return ["Anträge", "Termine", "Benachrichtigungen / Nachrichten", "Meine Daten"].includes(card.title);
-                }
-                // andere Rollen (nicht 'kunde') sehen alle Karten
-                return true;
-              })
-              .map((card, index) => (
-                <DashboardCard key={index} {...card} />
-              ))}
-          </div>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {cards
+            .filter(card => {
+              // Kundenbetreuer sehen alle Karten
+              if (activeRole === "kundenbetreuer") return true;
+              // Installateur sieht nur relevante Bereiche
+              if (activeRole === "installateur") {
+                return ["Anträge", "Termine", "Benachrichtigungen / Nachrichten", "Meine Daten"].includes(card.title);
+              }
+              // Kunde sieht alle Karten
+              return true;
+            })
+            .map((card, index) => (
+              <DashboardCard key={index} {...card} />
+            ))}
+        </div>
 
         <ChatBot />
       </div>
