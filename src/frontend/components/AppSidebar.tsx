@@ -1,4 +1,4 @@
-import { LayoutDashboard, Gauge, Bell, Calendar, TrendingUp, FileText, User, Scale, LogOut } from "lucide-react";
+import { LayoutDashboard, Gauge, Bell, Calendar, TrendingUp, FileText, User, Scale, LogOut, Network } from "lucide-react";
 import { NavLink } from "@/frontend/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/frontend/contexts/AuthContext";
@@ -26,6 +26,7 @@ const navigationItems = [
   { to: "/termine", icon: Calendar, label: "Termine", roles: ["kunde", "installateur", "kundenbetreuer"] as AppRole[] },
   { to: "/verbrauch", icon: TrendingUp, label: "Verbrauch", roles: ["kunde"] as AppRole[] },
   { to: "/antraege", icon: FileText, label: "Anträge", roles: ["kunde", "installateur", "kundenbetreuer"] as AppRole[] },
+  { to: "/netzplanung", icon: Network, label: "Netzplanung", roles: ["kundenbetreuer"] as AppRole[] },
   { to: "/meine-daten", icon: User, label: "Meine Daten", roles: ["kunde", "installateur", "kundenbetreuer"] as AppRole[] },
   { to: "/rechtliches", icon: Scale, label: "Rechtliches", roles: ["kunde"] as AppRole[] },
 ];
@@ -50,7 +51,10 @@ export function AppSidebar() {
             <span className="text-primary-foreground font-bold text-lg">N</span>
           </div>
           {open && (
-            <span className="text-xl font-semibold text-foreground">Netzportal</span>
+            <div className="flex flex-col">
+              <span className="text-xl font-semibold text-foreground">Netzportal</span>
+              <span className="text-xs text-muted-foreground">v2.1.0</span>
+            </div>
           )}
         </div>
       </SidebarHeader>

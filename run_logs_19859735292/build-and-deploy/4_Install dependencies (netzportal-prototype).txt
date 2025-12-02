@@ -1,0 +1,5 @@
+﻿2025-12-02T13:10:17.8488148Z ##[group]Run npm ci
+2025-12-02T13:10:17.8488443Z [36;1mnpm ci[0m
+2025-12-02T13:10:17.8527999Z shell: /usr/bin/bash -e {0}
+2025-12-02T13:10:17.8528266Z ##[endgroup]
+2025-12-02T13:10:17.8688073Z ##[error]An error occurred trying to start process '/usr/bin/bash' with working directory '/home/runner/work/netzportal-prototype/netzportal-prototype/./netzportal-prototype'. No such file or directory

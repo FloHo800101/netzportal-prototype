@@ -17,6 +17,7 @@ import Verbrauch from "./pages/Verbrauch";
 import Antraege from "./pages/Antraege";
 import MeineDaten from "./pages/MeineDaten";
 import Rechtliches from "./pages/Rechtliches";
+import Netzplanung from "./pages/Netzplanung";
 import NeueAnlage from "./pages/antrag/NeueAnlage";
 import AdminSetup from "./pages/AdminSetup";
 import NotFound from "./pages/NotFound";
@@ -54,6 +55,7 @@ const App = () => (
                             <Route path="/termine" element={<Termine />} />
                             <Route path="/verbrauch" element={<Verbrauch />} />
                             <Route path="/antraege" element={<Antraege />} />
+                            <Route path="/netzplanung" element={<Netzplanung />} />
                             <Route path="/meine-daten" element={<MeineDaten />} />
                             <Route path="/rechtliches" element={<Rechtliches />} />
                             <Route path="/antrag/neue-anlage" element={<NeueAnlage />} />
