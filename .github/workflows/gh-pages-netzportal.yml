@@ -24,17 +24,8 @@ jobs:
       - name: Build (netzportal-prototype)
         run: npm run build
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Serve built site
-        run: |
-          npx http-server ./dist -p 8080 &
-          for i in {1..30}; do curl -sSf http://localhost:8080 && break || sleep 1; done
-
-      - name: Run Playwright smoke tests
-        run: |
-          APP_URL=http://localhost:8080 npx playwright test e2e/smoke.spec.ts --project=chromium -c playwright.config.ts --reporter=list
+      # Playwright tests removed - no tests exist yet
+      # TODO: Add Playwright tests later
 
       - name: Deploy to GitHub Pages (netzportal-prototype/dist)
         if: success()
