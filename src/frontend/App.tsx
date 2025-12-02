@@ -12,6 +12,8 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Zaehlerstand from "./pages/Zaehlerstand";
 import Nachrichten from "./pages/Nachrichten";
+import NachrichtenTest from "./pages/NachrichtenTest";
+import NachrichtenSimple from "./pages/NachrichtenSimple";
 import Termine from "./pages/Termine";
 import Verbrauch from "./pages/Verbrauch";
 import Antraege from "./pages/Antraege";
@@ -54,7 +56,9 @@ const App = () => (
                           <Routes>
                             <Route path="/" element={<Dashboard />} />
                             <Route path="/zaehlerstand" element={<Zaehlerstand />} />
-                            <Route path="/nachrichten" element={<Nachrichten />} />
+                            <Route path="/nachrichten-test" element={<NachrichtenTest />} />
+                            <Route path="/nachrichten-simple" element={<NachrichtenSimple />} />
+                            <Route path="/nachrichten" element={<NachrichtenSimple />} />
                             <Route path="/termine" element={<Termine />} />
                             <Route path="/verbrauch" element={<Verbrauch />} />
                             <Route path="/meine-anschluesse" element={<MeineAnschluesse />} />
