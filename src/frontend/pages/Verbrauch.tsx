@@ -10,10 +10,11 @@ import {
   Line,
   Legend,
 } from "recharts";
-import { TrendingDown, TrendingUp, Zap } from "lucide-react";
+import { TrendingDown, TrendingUp, Zap, ArrowLeft } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ScenarioSimulator from "../components/ScenarioSimulator";
+import { Button } from "../components/ui/button";
 
 const monthlyData = [
   { month: "Feb", hausstrom: 110, wallbox: 42, waermepumpe: 90, einspeisung: 0, temp: 3 },
@@ -30,7 +31,27 @@ const monthlyData = [
   { month: "Jan", hausstrom: 120, wallbox: 48, waermepumpe: 130, einspeisung: 125, temp: 1 },
 ];
 
+// Generiere Tagesdaten für einen Monat basierend auf Monatswerten
+const generateDailyData = (monthData: typeof monthlyData[0], daysInMonth: number) => {
+  const dailyData = [];
+  for (let day = 1; day <= daysInMonth; day++) {
+    // Variiere die Tageswerte etwas (±20%)
+    const variation = 0.8 + Math.random() * 0.4;
+    dailyData.push({
+      day: day.toString(),
+      hausstrom: Math.round((monthData.hausstrom / daysInMonth) * variation * 10) / 10,
+      wallbox: Math.round((monthData.wallbox / daysInMonth) * variation * 10) / 10,
+      waermepumpe: Math.round((monthData.waermepumpe / daysInMonth) * variation * 10) / 10,
+      einspeisung: Math.round((monthData.einspeisung / daysInMonth) * variation * 10) / 10,
+      temp: monthData.temp + Math.round((Math.random() - 0.5) * 4)
+    });
+  }
+  return dailyData;
+};
+
 const Verbrauch = () => {
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+  const [dailyData, setDailyData] = useState<any[]>([]);
   const [showHausstrom, setShowHausstrom] = useState(true);
   const [showWallbox, setShowWallbox] = useState(true);
   const [showWaermepumpe, setShowWaermepumpe] = useState(true);
@@ -75,6 +96,15 @@ const Verbrauch = () => {
         (showHausstrom ? d.hausstrom : 0) + (showWallbox ? d.wallbox : 0) + (showWaermepumpe ? d.waermepumpe : 0),
     }));
   }, [showHausstrom, showWallbox, showWaermepumpe]);
+
+  const totalDailyConsumption = useMemo(() => {
+    return dailyData.map((d) => ({
+      ...d,
+      verbrauch:
+        (showHausstrom ? d.hausstrom : 0) + (showWallbox ? d.wallbox : 0) + (showWaermepumpe ? d.waermepumpe : 0),
+    }));
+  }, [dailyData, showHausstrom, showWallbox, showWaermepumpe]);
+
   const navigate = useNavigate();
 
   // expose monthlyData for the month-detail page to read (quick hack for this prototype)
@@ -84,8 +114,20 @@ const Verbrauch = () => {
     } catch (e) {}
   }, []);
 
-  const onMonthClick = (monthKey: string) => {
-    navigate(`/verbrauch/${encodeURIComponent(monthKey)}`);
+  const onMonthClick = (data: any) => {
+    const monthData = monthlyData.find(m => m.month === data.month);
+    if (monthData) {
+      setSelectedMonth(data.month);
+      // Bestimme Anzahl der Tage im Monat (vereinfacht)
+      const daysInMonth = data.month === "Feb" ? 28 : 
+                          ["Apr", "Jun", "Sep", "Nov"].includes(data.month) ? 30 : 31;
+      setDailyData(generateDailyData(monthData, daysInMonth));
+    }
+  };
+
+  const onBackToMonthly = () => {
+    setSelectedMonth(null);
+    setDailyData([]);
   };
   return (
     <div className="min-h-screen bg-background">
@@ -138,8 +180,24 @@ const Verbrauch = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Verbrauchsverlauf</CardTitle>
-            <CardDescription>Monatlicher Energieverbrauch und Einspeisung der letzten 12 Monate</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>
+                  {selectedMonth ? `Tagesansicht ${selectedMonth}` : "Verbrauchsverlauf"}
+                </CardTitle>
+                <CardDescription>
+                  {selectedMonth 
+                    ? `Täglicher Energieverbrauch und Einspeisung im ${selectedMonth}` 
+                    : "Monatlicher Energieverbrauch und Einspeisung der letzten 12 Monate"}
+                </CardDescription>
+              </div>
+              {selectedMonth && (
+                <Button variant="outline" size="sm" onClick={onBackToMonthly} className="gap-2">
+                  <ArrowLeft className="w-4 h-4" />
+                  Zurück zur Monatsansicht
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <div className="mb-4 flex flex-wrap items-center gap-3">
@@ -176,9 +234,9 @@ const Verbrauch = () => {
             </div>
 
             <ResponsiveContainer width="100%" height={420}>
-              <ComposedChart data={totalConsumption}>
+              <ComposedChart data={selectedMonth ? totalDailyConsumption : totalConsumption}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                <XAxis dataKey="month" className="text-xs" />
+                <XAxis dataKey={selectedMonth ? "day" : "month"} className="text-xs" />
                 <YAxis
                   className="text-xs"
                   yAxisId="left"
@@ -200,17 +258,52 @@ const Verbrauch = () => {
                 <Legend />
 
                 {showHausstrom && (
-                  <Bar dataKey="hausstrom" name="Hausstrom" stackId="a" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} yAxisId="left" onClick={(d: any) => onMonthClick(d.month)} />
+                  <Bar 
+                    dataKey="hausstrom" 
+                    name="Hausstrom" 
+                    stackId="a" 
+                    fill="hsl(var(--chart-1))" 
+                    radius={[4, 4, 0, 0]} 
+                    yAxisId="left" 
+                    onClick={(d: any) => !selectedMonth && onMonthClick(d)}
+                    cursor={selectedMonth ? "default" : "pointer"}
+                  />
                 )}
                 {showWallbox && (
-                  <Bar dataKey="wallbox" name="Wallbox" stackId="a" fill="hsl(var(--chart-3))" radius={[4, 4, 0, 0]} yAxisId="left" onClick={(d: any) => onMonthClick(d.month)} />
+                  <Bar 
+                    dataKey="wallbox" 
+                    name="Wallbox" 
+                    stackId="a" 
+                    fill="hsl(var(--chart-3))" 
+                    radius={[4, 4, 0, 0]} 
+                    yAxisId="left" 
+                    onClick={(d: any) => !selectedMonth && onMonthClick(d)}
+                    cursor={selectedMonth ? "default" : "pointer"}
+                  />
                 )}
                 {showWaermepumpe && (
-                  <Bar dataKey="waermepumpe" name="Wärmepumpe" stackId="a" fill="hsl(var(--chart-4))" radius={[4, 4, 0, 0]} yAxisId="left" onClick={(d: any) => onMonthClick(d.month)} />
+                  <Bar 
+                    dataKey="waermepumpe" 
+                    name="Wärmepumpe" 
+                    stackId="a" 
+                    fill="hsl(var(--chart-4))" 
+                    radius={[4, 4, 0, 0]} 
+                    yAxisId="left" 
+                    onClick={(d: any) => !selectedMonth && onMonthClick(d)}
+                    cursor={selectedMonth ? "default" : "pointer"}
+                  />
                 )}
 
                 {showEinspeisung && (
-                  <Bar dataKey="einspeisung" name="Einspeisung" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} yAxisId="left" onClick={(d: any) => onMonthClick(d.month)} />
+                  <Bar 
+                    dataKey="einspeisung" 
+                    name="Einspeisung" 
+                    fill="hsl(var(--chart-2))" 
+                    radius={[4, 4, 0, 0]} 
+                    yAxisId="left" 
+                    onClick={(d: any) => !selectedMonth && onMonthClick(d)}
+                    cursor={selectedMonth ? "default" : "pointer"}
+                  />
                 )}
 
                 {showTemp && <Line type="monotone" dataKey="temp" name="Ø-Temperatur" stroke="hsl(var(--accent))" strokeWidth={2} yAxisId="right" />}

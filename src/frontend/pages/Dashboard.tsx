@@ -4,7 +4,8 @@ import { NotificationsPreview } from "../components/NotificationsPreview";
 import { ChatBot } from "../components/ChatBot";
 import { useAuth } from "../contexts/AuthContext";
 import { Button } from "../components/ui/button";
-import { Gauge, Bell, Calendar, TrendingUp, FileText } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Gauge, Bell, Calendar, TrendingUp, FileText, Newspaper, Video, Image, Link2 } from "lucide-react";
 
 const Dashboard = () => {
   const { activeRole, user } = useAuth();
@@ -83,12 +84,83 @@ const Dashboard = () => {
 
         {activeRole === "kunde" && (
           <>
-            <div className="mb-8">
-              <StatusTimeline />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              {/* Links: Benachrichtigungen */}
+              <div className="flex">
+                <NotificationsPreview />
+              </div>
+
+              {/* Rechts: News */}
+              <div className="flex">
+                <Card className="flex-1">
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <Newspaper className="h-5 w-5" />
+                      <CardTitle>Neuigkeiten</CardTitle>
+                    </div>
+                    <CardDescription>Aktuelle Informationen vom Netzbetreiber</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                          <Video className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2 mb-1">
+                            <h4 className="text-sm font-medium line-clamp-2">
+                              Neue Förderprogramme für PV-Anlagen
+                            </h4>
+                            <span className="text-xs text-muted-foreground shrink-0">Vor 2 Tagen</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground line-clamp-2">
+                            Ab sofort stehen erweiterte Fördermöglichkeiten zur Verfügung.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0">
+                          <Image className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2 mb-1">
+                            <h4 className="text-sm font-medium line-clamp-2">
+                              Wartungsarbeiten am 15. Dezember
+                            </h4>
+                            <span className="text-xs text-muted-foreground shrink-0">Vor 5 Tagen</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground line-clamp-2">
+                            Geplante Arbeiten am Stromnetz in Ihrer Region.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0">
+                          <Link2 className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2 mb-1">
+                            <h4 className="text-sm font-medium line-clamp-2">
+                              Optimierung der Antragsbearbeitung
+                            </h4>
+                            <span className="text-xs text-muted-foreground shrink-0">Vor 1 Woche</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground line-clamp-2">
+                            Anträge werden nun 30% schneller bearbeitet.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
 
+            {/* Aktueller Antrag */}
             <div className="mb-8">
-              <NotificationsPreview />
+              <StatusTimeline />
             </div>
           </>
         )}
