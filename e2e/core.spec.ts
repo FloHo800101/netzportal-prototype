@@ -15,7 +15,7 @@ test.describe('Netzportal Core Tests', () => {
     await page.click('button[type="submit"]');
     
     // Wait for navigation after successful login
-    await page.waitForURL('/#/', { timeout: 15000 });
+    await page.waitForURL(/\/#\/$/, { timeout: 15000 });
     await page.waitForLoadState('networkidle');
   }
 
@@ -32,7 +32,7 @@ test.describe('Netzportal Core Tests', () => {
     await loginAsTestUser(page);
     
     // Should now be on dashboard
-    expect(page.url()).toBe('http://localhost:8080/#/');
+    expect(page.url()).toMatch(/\/#\/$/);
   });
 
   test('should show dashboard content', async ({ page }) => {
