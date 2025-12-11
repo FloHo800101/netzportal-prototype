@@ -1,0 +1,869 @@
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import { Separator } from "../components/ui/separator";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
+import { Textarea } from "../components/ui/textarea";
+import { FileText, Zap, Calendar, Download, Home, Sun, Thermometer, Activity, Euro, Clock, MapPin, Settings, AlertCircle, Info, MessageSquare, Send, Phone } from "lucide-react";
+import { useToast } from "../hooks/use-toast";
+
+interface Anschluss {
+  id: string;
+  typ: 'Hausanschluss' | 'PV-Anlage' | 'Wärmepumpe';
+  bezeichnung: string;
+  zaehlernummer: string;
+  anschlussnummer: string;
+  standort: string;
+  status: 'aktiv' | 'geplant' | 'wartung';
+  leistung: string;
+  inbetriebnahme: string;
+  letzteAblesung: string;
+  verbrauchEinspeisung: string;
+  icon: any;
+}
+
+interface Vertrag {
+  id: string;
+  typ: 'Einspeisevergütung' | 'Netznutzung' | 'Messstellenbetrieb';
+  bezeichnung: string;
+  vertragsnummer: string;
+  laufzeit: string;
+  vergütung?: string;
+  entgelt?: string;
+  status: 'aktiv' | 'auslaufend' | 'gekündigt';
+  dokument: string;
+  anschlussId: string;
+}
+
+const anschlüsse: Anschluss[] = [
+  {
+    id: 'ANS-001',
+    typ: 'Hausanschluss',
+    bezeichnung: 'Hauptanschluss Wohngebäude',
+    zaehlernummer: 'HZ-2025-4578901',
+    anschlussnummer: 'NA-12345-001',
+    standort: 'Musterstraße 15, 12345 Musterstadt',
+    status: 'aktiv',
+    leistung: '3 x 80A / 55 kW',
+    inbetriebnahme: '15.03.2020',
+    letzteAblesung: '28.11.2025',
+    verbrauchEinspeisung: '4.250 kWh (Verbrauch)',
+    icon: Home
+  },
+  {
+    id: 'ANS-002',
+    typ: 'PV-Anlage',
+    bezeichnung: 'Photovoltaikanlage Dach Süd',
+    zaehlernummer: 'PV-2025-7891234',
+    anschlussnummer: 'EZ-12345-002',
+    standort: 'Musterstraße 15, Dachfläche Süd',
+    status: 'aktiv',
+    leistung: '9,92 kWp / 24 Module',
+    inbetriebnahme: '12.07.2024',
+    letzteAblesung: '01.12.2025',
+    verbrauchEinspeisung: '8.750 kWh (Einspeisung)',
+    icon: Sun
+  },
+  {
+    id: 'ANS-003',
+    typ: 'Wärmepumpe',
+    bezeichnung: 'Luft-Wasser-Wärmepumpe',
+    zaehlernummer: 'WP-2025-3456789',
+    anschlussnummer: 'WP-12345-003',
+    standort: 'Musterstraße 15, Außenbereich Nord',
+    status: 'aktiv',
+    leistung: '12 kW Heizleistung',
+    inbetriebnahme: '20.09.2024',
+    letzteAblesung: '28.11.2025',
+    verbrauchEinspeisung: '2.890 kWh (Verbrauch)',
+    icon: Thermometer
+  }
+];
+
+const verträge: Vertrag[] = [
+  {
+    id: 'VTR-001',
+    typ: 'Einspeisevergütung',
+    bezeichnung: 'EEG-Einspeisevergütung PV-Anlage',
+    vertragsnummer: 'EEG-2024-789456',
+    laufzeit: '20 Jahre (bis 12.07.2044)',
+    vergütung: '8,12 ct/kWh',
+    status: 'aktiv',
+    dokument: 'einspeisevertrag_pv_2024.pdf',
+    anschlussId: 'ANS-002'
+  },
+  {
+    id: 'VTR-002',
+    typ: 'Netznutzung',
+    bezeichnung: 'Netznutzungsvertrag Hausanschluss',
+    vertragsnummer: 'NNV-2020-123456',
+    laufzeit: 'unbefristet',
+    entgelt: '8,95 ct/kWh + 96,00 €/Jahr Grundpreis',
+    status: 'aktiv',
+    dokument: 'netznutzungsvertrag_2020.pdf',
+    anschlussId: 'ANS-001'
+  },
+  {
+    id: 'VTR-003',
+    typ: 'Messstellenbetrieb',
+    bezeichnung: 'Messstellenbetrieb moderne Messeinrichtung',
+    vertragsnummer: 'MSB-2024-654321',
+    laufzeit: '8 Jahre (bis 31.12.2032)',
+    entgelt: '20,00 €/Jahr',
+    status: 'aktiv',
+    dokument: 'messstellenbetrieb_2024.pdf',
+    anschlussId: 'ANS-002'
+  }
+];
+
+const MeineAnschluesse = () => {
+  const [isZaehlerstandDialogOpen, setIsZaehlerstandDialogOpen] = useState(false);
+  const [isServiceanfrageDialogOpen, setIsServiceanfrageDialogOpen] = useState(false);
+  const [selectedZaehler, setSelectedZaehler] = useState("");
+  const [meldungstyp, setMeldungstyp] = useState("jahresablesung");
+  const [zaehlerstand, setZaehlerstand] = useState("");
+  const [ablesedatum, setAblesedatum] = useState("");
+  const [bemerkungen, setBemerkungen] = useState("");
+  
+  // Serviceanfrage States
+  const [serviceKategorie, setServiceKategorie] = useState("");
+  const [betreffendeAnlage, setBetreffendeAnlage] = useState("");
+  const [serviceBeschreibung, setServiceBeschreibung] = useState("");
+  const [serviceKontakt, setServiceKontakt] = useState("email");
+  const [servicePrioritaet, setServicePrioritaet] = useState("normal");
+  
+  const { toast } = useToast();
+
+  // Nur nicht-intelligente Zähler für manuelle Erfassung
+  const manuellAblesebareZaehler = anschlüsse.filter(anschluss => 
+    anschluss.typ === 'Hausanschluss' || anschluss.typ === 'Wärmepumpe'
+  );
+
+  // Serviceanfrage Kategorien
+  const serviceKategorien = [
+    { value: "steuerlich", label: "Steuerliche Behandlung", description: "Fragen zur steuerlichen Behandlung Ihrer Anlage" },
+    { value: "mastr", label: "MaStR Registrierung", description: "Marktstammdatenregister An-/Abmeldung" },
+    { value: "betreiberwechsel", label: "Betreiberwechsel", description: "Änderung des Anlagenbetreibers" },
+    { value: "rechnungskorrektur", label: "Rechnungskorrektur", description: "Korrektur von Abrechnungen oder Vergütungen" },
+    { value: "direktvermarktung", label: "Direktvermarktung", description: "Wechsel in die Direktvermarktung" },
+    { value: "allgemein", label: "Allgemeine Anfrage", description: "Sonstige Fragen zu Ihren Anschlüssen" }
+  ];
+
+  const handleZaehlerstandSubmit = () => {
+    if (!selectedZaehler || !zaehlerstand || !ablesedatum) {
+      toast({
+        title: "Unvollständige Angaben",
+        description: "Bitte füllen Sie alle Pflichtfelder aus.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Simuliere Übermittlung
+    toast({
+      title: "Zählerstand erfolgreich übermittelt",
+      description: `Zählerstand ${zaehlerstand} kWh wurde für ${meldungstyp === 'jahresablesung' ? 'Jahresablesung' : 'vorzeitige Meldung'} registriert.`,
+    });
+
+    // Reset form
+    setSelectedZaehler("");
+    setZaehlerstand("");
+    setAblesedatum("");
+    setBemerkungen("");
+    setIsZaehlerstandDialogOpen(false);
+  };
+
+  const handleServiceanfrageSubmit = () => {
+    if (!serviceKategorie || !serviceBeschreibung) {
+      toast({
+        title: "Unvollständige Angaben",
+        description: "Bitte wählen Sie eine Kategorie und beschreiben Sie Ihr Anliegen.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const kategorie = serviceKategorien.find(k => k.value === serviceKategorie);
+    const ticketNummer = `SRV-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+
+    toast({
+      title: "Serviceanfrage erfolgreich übermittelt",
+      description: `Ihre Anfrage "${kategorie?.label}" wurde mit der Ticket-Nr. ${ticketNummer} erstellt. Sie erhalten in Kürze eine Bestätigung.`,
+    });
+
+    // Reset form
+    setServiceKategorie("");
+    setBetreffendeAnlage("");
+    setServiceBeschreibung("");
+    setServiceKontakt("email");
+    setServicePrioritaet("normal");
+    setIsServiceanfrageDialogOpen(false);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'aktiv': return 'bg-green-100 text-green-800 border-green-200';
+      case 'geplant': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'wartung': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'auslaufend': return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'gekündigt': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getVertragsByAnschluss = (anschlussId: string) => {
+    return verträge.filter(v => v.anschlussId === anschlussId);
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="mb-8">
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">Meine Anschlüsse & Verträge</h1>
+              <p className="text-muted-foreground">Übersicht über Ihre Netzanschlüsse und Vertragsdetails</p>
+            </div>
+            <div className="flex gap-3">
+              <Button 
+                variant="outline"
+                onClick={() => setIsServiceanfrageDialogOpen(true)}
+                className="flex items-center gap-2"
+              >
+                <MessageSquare className="w-4 h-4" />
+                Serviceanfrage
+              </Button>
+              <Button 
+                onClick={() => setIsZaehlerstandDialogOpen(true)}
+                className="flex items-center gap-2"
+              >
+                <Activity className="w-4 h-4" />
+                Zählerstandserfassung
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-8">
+          {/* Anschlüsse Übersicht */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="w-5 h-5" />
+                Netzanschlüsse
+              </CardTitle>
+              <CardDescription>
+                Ihre aktiven und geplanten Netzanschlüsse im Überblick
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {anschlüsse.map((anschluss, index) => {
+                  const Icon = anschluss.icon;
+                  const zugehörigeVerträge = getVertragsByAnschluss(anschluss.id);
+                  
+                  return (
+                    <div key={anschluss.id}>
+                      <Card className="border-l-4 border-l-primary">
+                        <CardContent className="pt-6">
+                          <div className="grid lg:grid-cols-3 gap-6">
+                            {/* Anschluss-Info */}
+                            <div className="lg:col-span-2">
+                              <div className="flex items-start gap-3 mb-4">
+                                <Icon className="w-6 h-6 text-primary mt-1" />
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-3 mb-2">
+                                    <h3 className="text-lg font-semibold">{anschluss.bezeichnung}</h3>
+                                    <Badge className={getStatusColor(anschluss.status)}>
+                                      {anschluss.status === 'aktiv' ? 'Aktiv' : 
+                                       anschluss.status === 'geplant' ? 'Geplant' : 'Wartung'}
+                                    </Badge>
+                                  </div>
+                                  <p className="text-sm text-muted-foreground mb-3">{anschluss.typ}</p>
+                                  
+                                  <div className="grid md:grid-cols-2 gap-4 text-sm">
+                                    <div className="space-y-2">
+                                      <div className="flex items-center gap-2">
+                                        <Activity className="w-4 h-4 text-muted-foreground" />
+                                        <span className="font-medium">Zählernummer:</span>
+                                        <span className="font-mono">{anschluss.zaehlernummer}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <Settings className="w-4 h-4 text-muted-foreground" />
+                                        <span className="font-medium">Anschluss-Nr.:</span>
+                                        <span className="font-mono">{anschluss.anschlussnummer}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <MapPin className="w-4 h-4 text-muted-foreground" />
+                                        <span className="font-medium">Standort:</span>
+                                        <span>{anschluss.standort}</span>
+                                      </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                      <div className="flex items-center gap-2">
+                                        <Zap className="w-4 h-4 text-muted-foreground" />
+                                        <span className="font-medium">Leistung:</span>
+                                        <span>{anschluss.leistung}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <Calendar className="w-4 h-4 text-muted-foreground" />
+                                        <span className="font-medium">Inbetriebnahme:</span>
+                                        <span>{anschluss.inbetriebnahme}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <Clock className="w-4 h-4 text-muted-foreground" />
+                                        <span className="font-medium">Letzte Ablesung:</span>
+                                        <span>{anschluss.letzteAblesung}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="mt-3 p-3 bg-muted rounded-md">
+                                    <span className="text-sm font-medium text-primary">
+                                      Aktueller Zeitraum: {anschluss.verbrauchEinspeisung}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Zugehörige Verträge */}
+                            <div className="lg:border-l lg:pl-6">
+                              <h4 className="font-medium mb-3 flex items-center gap-2">
+                                <FileText className="w-4 h-4" />
+                                Zugehörige Verträge
+                              </h4>
+                              {zugehörigeVerträge.length > 0 ? (
+                                <div className="space-y-3">
+                                  {zugehörigeVerträge.map(vertrag => (
+                                    <Card key={vertrag.id} className="p-3">
+                                      <div className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-sm font-medium">{vertrag.bezeichnung}</span>
+                                          <Badge variant="outline" className={getStatusColor(vertrag.status)}>
+                                            {vertrag.status === 'aktiv' ? 'Aktiv' : 
+                                             vertrag.status === 'auslaufend' ? 'Auslaufend' : 'Gekündigt'}
+                                          </Badge>
+                                        </div>
+                                        <div className="text-xs text-muted-foreground space-y-1">
+                                          <div>Nr.: {vertrag.vertragsnummer}</div>
+                                          <div>Laufzeit: {vertrag.laufzeit}</div>
+                                          {vertrag.vergütung && (
+                                            <div className="flex items-center gap-1 text-green-600">
+                                              <Euro className="w-3 h-3" />
+                                              Vergütung: {vertrag.vergütung}
+                                            </div>
+                                          )}
+                                          {vertrag.entgelt && (
+                                            <div className="flex items-center gap-1">
+                                              <Euro className="w-3 h-3" />
+                                              Entgelt: {vertrag.entgelt}
+                                            </div>
+                                          )}
+                                        </div>
+                                        <div className="flex items-center justify-between gap-2 mt-2">
+                                          <div className="flex items-center gap-2">
+                                            <FileText className="w-3 h-3 text-muted-foreground" />
+                                            <span className="text-xs text-muted-foreground cursor-not-allowed">
+                                              {vertrag.dokument}
+                                            </span>
+                                            <Download className="w-3 h-3 text-muted-foreground cursor-not-allowed opacity-50" />
+                                          </div>
+                                          <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            onClick={() => {
+                                              setBetreffendeAnlage(anschluss.id);
+                                              setServiceKategorie(vertrag.typ === 'Einspeisevergütung' ? 'steuerlich' : 'allgemein');
+                                              setIsServiceanfrageDialogOpen(true);
+                                            }}
+                                            className="h-6 px-2 text-xs"
+                                          >
+                                            <MessageSquare className="w-3 h-3 mr-1" />
+                                            Frage
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </Card>
+                                  ))}
+                                </div>
+                              ) : (
+                                <p className="text-sm text-muted-foreground">Keine Verträge zugeordnet</p>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      {index < anschlüsse.length - 1 && <Separator className="my-6" />}
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Verträge Übersicht */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                Alle Verträge & Dokumente
+              </CardTitle>
+              <CardDescription>
+                Komplette Übersicht Ihrer Vertragsunterlagen
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-3 px-2">Vertragstyp</th>
+                      <th className="text-left py-3 px-2">Bezeichnung</th>
+                      <th className="text-left py-3 px-2">Vertragsnummer</th>
+                      <th className="text-left py-3 px-2">Laufzeit</th>
+                      <th className="text-left py-3 px-2">Vergütung/Entgelt</th>
+                      <th className="text-left py-3 px-2">Status</th>
+                      <th className="text-left py-3 px-2">Dokument</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {verträge.map(vertrag => (
+                      <tr key={vertrag.id} className="border-b hover:bg-muted/50">
+                        <td className="py-3 px-2">
+                          <Badge variant="outline">{vertrag.typ}</Badge>
+                        </td>
+                        <td className="py-3 px-2 text-sm">{vertrag.bezeichnung}</td>
+                        <td className="py-3 px-2 text-sm font-mono">{vertrag.vertragsnummer}</td>
+                        <td className="py-3 px-2 text-sm">{vertrag.laufzeit}</td>
+                        <td className="py-3 px-2 text-sm">
+                          {vertrag.vergütung && (
+                            <span className="text-green-600 font-medium">{vertrag.vergütung}</span>
+                          )}
+                          {vertrag.entgelt && (
+                            <span>{vertrag.entgelt}</span>
+                          )}
+                        </td>
+                        <td className="py-3 px-2">
+                          <Badge className={getStatusColor(vertrag.status)}>
+                            {vertrag.status === 'aktiv' ? 'Aktiv' : 
+                             vertrag.status === 'auslaufend' ? 'Auslaufend' : 'Gekündigt'}
+                          </Badge>
+                        </td>
+                        <td className="py-3 px-2">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground cursor-not-allowed">
+                            <FileText className="w-4 h-4" />
+                            <span>{vertrag.dokument}</span>
+                            <Download className="w-4 h-4 opacity-50" />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Wichtige Informationen */}
+          <Card className="bg-blue-50 border-blue-200">
+            <CardContent className="pt-6">
+              <div className="flex gap-3">
+                <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <FileText className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <h4 className="font-medium text-blue-900 mb-2">Hinweise zu Ihren Dokumenten</h4>
+                  <div className="text-sm text-blue-800 space-y-1">
+                    <p>• Die angezeigten Dokumente sind derzeit nur zur Ansicht verfügbar</p>
+                    <p>• EEG-Vergütungssätze gelten für 20 Jahre ab Inbetriebnahme der PV-Anlage</p>
+                    <p>• Messstellenbetrieb wird seit 2017 durch den grundzuständigen Messstellenbetreiber durchgeführt</p>
+                    <p>• Bei Fragen zu Ihren Verträgen kontaktieren Sie unseren Kundenservice</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Zählerstandserfassung Dialog */}
+        <Dialog open={isZaehlerstandDialogOpen} onOpenChange={setIsZaehlerstandDialogOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Activity className="w-5 h-5" />
+                Zählerstandserfassung
+              </DialogTitle>
+              <DialogDescription>
+                Melden Sie Ihren Zählerstand für nicht-intelligente Zähler
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-6 py-4">
+              {/* Zähler auswählen */}
+              <div className="space-y-2">
+                <Label htmlFor="zaehler-select">Zähler auswählen *</Label>
+                <Select value={selectedZaehler} onValueChange={setSelectedZaehler}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Wählen Sie einen Zähler..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {manuellAblesebareZaehler.map(anschluss => (
+                      <SelectItem key={anschluss.id} value={anschluss.id}>
+                        <div className="flex items-center gap-2">
+                          <anschluss.icon className="w-4 h-4" />
+                          <div>
+                            <div className="font-medium">{anschluss.bezeichnung}</div>
+                            <div className="text-sm text-muted-foreground">
+                              Zähler: {anschluss.zaehlernummer}
+                            </div>
+                          </div>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Meldungstyp */}
+              <div className="space-y-3">
+                <Label>Meldungstyp *</Label>
+                <RadioGroup value={meldungstyp} onValueChange={setMeldungstyp}>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="jahresablesung" id="jahresablesung" />
+                    <Label htmlFor="jahresablesung" className="flex-1">
+                      <div className="font-medium">Jahresablesung</div>
+                      <div className="text-sm text-muted-foreground">
+                        Planmäßige Ablesung zum 31.12. (nächste Frist: 30.11.2025)
+                      </div>
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="vorzeitig" id="vorzeitig" />
+                    <Label htmlFor="vorzeitig" className="flex-1">
+                      <div className="font-medium">Vorzeitige Meldung</div>
+                      <div className="text-sm text-muted-foreground">
+                        Außerplanmäßige Ablesung (z.B. bei Lieferantenwechsel)
+                      </div>
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              {/* Zählerstand */}
+              <div className="space-y-2">
+                <Label htmlFor="zaehlerstand">Zählerstand *</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="zaehlerstand"
+                    type="number"
+                    placeholder="z.B. 12345"
+                    value={zaehlerstand}
+                    onChange={(e) => setZaehlerstand(e.target.value)}
+                    className="flex-1"
+                  />
+                  <div className="flex items-center px-3 bg-muted rounded-md text-sm text-muted-foreground">
+                    kWh
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Bitte geben Sie den aktuellen Zählerstand ohne Nachkommastellen ein
+                </p>
+              </div>
+
+              {/* Ablesedatum */}
+              <div className="space-y-2">
+                <Label htmlFor="ablesedatum">Ablesedatum *</Label>
+                <Input
+                  id="ablesedatum"
+                  type="date"
+                  value={ablesedatum}
+                  onChange={(e) => setAblesedatum(e.target.value)}
+                  max={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+
+              {/* Bemerkungen */}
+              <div className="space-y-2">
+                <Label htmlFor="bemerkungen">Bemerkungen (optional)</Label>
+                <Textarea
+                  id="bemerkungen"
+                  placeholder="z.B. Zähler schwer zugänglich, geschätzter Wert..."
+                  value={bemerkungen}
+                  onChange={(e) => setBemerkungen(e.target.value)}
+                  rows={3}
+                />
+              </div>
+
+              {/* Rechtliche Hinweise */}
+              {meldungstyp === 'vorzeitig' && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <div className="flex gap-2">
+                    <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm">
+                      <div className="font-medium text-yellow-800 mb-1">
+                        Hinweis zur vorzeitigen Meldung
+                      </div>
+                      <div className="text-yellow-700">
+                        Bei vorzeitigen Meldungen (z.B. Lieferantenwechsel) wird dieser Zählerstand 
+                        automatisch an Ihren aktuellen und neuen Energielieferanten übermittelt.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <div className="flex gap-2">
+                  <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-blue-700">
+                    <div className="font-medium mb-1">Wichtige Information</div>
+                    <div>
+                      • PV-Anlagen mit intelligenten Messsystemen (iMSys) werden automatisch ausgelesen<br/>
+                      • Manuelle Meldungen sind nur für konventionelle Zähler erforderlich<br/>
+                      • Bei Rückfragen wenden Sie sich an unseren Kundenservice
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-4 border-t">
+              <Button variant="outline" onClick={() => setIsZaehlerstandDialogOpen(false)} className="flex-1">
+                Abbrechen
+              </Button>
+              <Button onClick={handleZaehlerstandSubmit} className="flex-1">
+                Zählerstand übermitteln
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Serviceanfrage Dialog */}
+        <Dialog open={isServiceanfrageDialogOpen} onOpenChange={setIsServiceanfrageDialogOpen}>
+          <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <MessageSquare className="w-5 h-5" />
+                Serviceanfrage erstellen
+              </DialogTitle>
+              <DialogDescription>
+                Stellen Sie eine Anfrage zu Ihren Anschlüssen und Verträgen
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-6 py-4">
+              {/* Kategorie auswählen */}
+              <div className="space-y-3">
+                <Label htmlFor="service-kategorie">Kategorie *</Label>
+                <Select value={serviceKategorie} onValueChange={setServiceKategorie}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Wählen Sie eine Kategorie..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {serviceKategorien.map(kategorie => (
+                      <SelectItem key={kategorie.value} value={kategorie.value}>
+                        <div>
+                          <div className="font-medium">{kategorie.label}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {kategorie.description}
+                          </div>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Betreffende Anlage */}
+              <div className="space-y-2">
+                <Label htmlFor="betreffende-anlage">Betreffende Anlage (optional)</Label>
+                <Select value={betreffendeAnlage} onValueChange={setBetreffendeAnlage}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Wählen Sie eine Anlage..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="alle">Alle Anschlüsse</SelectItem>
+                    {anschlüsse.map(anschluss => (
+                      <SelectItem key={anschluss.id} value={anschluss.id}>
+                        <div className="flex items-center gap-2">
+                          <anschluss.icon className="w-4 h-4" />
+                          <div>
+                            <div className="font-medium">{anschluss.bezeichnung}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {anschluss.zaehlernummer}
+                            </div>
+                          </div>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Priorität */}
+              <div className="space-y-3">
+                <Label>Priorität</Label>
+                <RadioGroup value={servicePrioritaet} onValueChange={setServicePrioritaet}>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="niedrig" id="prio-niedrig" />
+                    <Label htmlFor="prio-niedrig" className="flex-1">
+                      <div className="font-medium">Niedrig</div>
+                      <div className="text-sm text-muted-foreground">
+                        Allgemeine Fragen (Bearbeitung binnen 5 Werktagen)
+                      </div>
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="normal" id="prio-normal" />
+                    <Label htmlFor="prio-normal" className="flex-1">
+                      <div className="font-medium">Normal</div>
+                      <div className="text-sm text-muted-foreground">
+                        Standard-Bearbeitung (binnen 3 Werktagen)
+                      </div>
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="hoch" id="prio-hoch" />
+                    <Label htmlFor="prio-hoch" className="flex-1">
+                      <div className="font-medium">Hoch</div>
+                      <div className="text-sm text-muted-foreground">
+                        Dringend (binnen 24 Stunden, nur bei betriebsrelevanten Störungen)
+                      </div>
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              {/* Bevorzugter Kontaktweg */}
+              <div className="space-y-3">
+                <Label>Bevorzugter Kontaktweg</Label>
+                <RadioGroup value={serviceKontakt} onValueChange={setServiceKontakt}>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="email" id="kontakt-email" />
+                    <Label htmlFor="kontakt-email" className="flex items-center gap-2">
+                      <MessageSquare className="w-4 h-4" />
+                      E-Mail (Standard)
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="telefon" id="kontakt-telefon" />
+                    <Label htmlFor="kontakt-telefon" className="flex items-center gap-2">
+                      <Phone className="w-4 h-4" />
+                      Telefonischer Rückruf
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              {/* Beschreibung */}
+              <div className="space-y-2">
+                <Label htmlFor="service-beschreibung">Beschreibung Ihres Anliegens *</Label>
+                <Textarea
+                  id="service-beschreibung"
+                  placeholder="Beschreiben Sie bitte Ihr Anliegen so detailliert wie möglich..."
+                  value={serviceBeschreibung}
+                  onChange={(e) => setServiceBeschreibung(e.target.value)}
+                  rows={5}
+                  className="resize-none"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Je detaillierter Ihre Beschreibung, desto schneller können wir Ihnen helfen
+                </p>
+              </div>
+
+              {/* Kategorie-spezifische Hinweise */}
+              {serviceKategorie === 'steuerlich' && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <div className="flex gap-2">
+                    <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-blue-700">
+                      <div className="font-medium mb-1">Steuerliche Behandlung</div>
+                      <div>
+                        Bitte beachten Sie, dass wir keine steuerliche Beratung durchführen dürfen. 
+                        Wir können Ihnen jedoch technische Daten und Bescheinigungen für Ihren Steuerberater bereitstellen.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {serviceKategorie === 'mastr' && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="flex gap-2">
+                    <Info className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-green-700">
+                      <div className="font-medium mb-1">MaStR Registrierung</div>
+                      <div>
+                        Die Registrierung im Marktstammdatenregister ist gesetzlich verpflichtend. 
+                        Wir unterstützen Sie gerne bei der An- oder Abmeldung Ihrer Anlage.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {serviceKategorie === 'direktvermarktung' && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <div className="flex gap-2">
+                    <Info className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-yellow-700">
+                      <div className="font-medium mb-1">Direktvermarktung</div>
+                      <div>
+                        Bei Anlagen über 100 kWp ist die Direktvermarktung verpflichtend. 
+                        Wir informieren Sie über die Voraussetzungen und Partner-Direktvermarkter.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {servicePrioritaet === 'hoch' && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <div className="flex gap-2">
+                    <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-red-700">
+                      <div className="font-medium mb-1">Priorität: Hoch</div>
+                      <div>
+                        Die hohe Priorität ist nur für betriebsrelevante Störungen oder Sicherheitsprobleme vorgesehen. 
+                        Für allgemeine Fragen nutzen Sie bitte die normale Priorität.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Kontaktdaten Hinweis */}
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                <div className="text-sm text-gray-700">
+                  <div className="font-medium mb-1">Ihre Kontaktdaten</div>
+                  <div>
+                    Wir verwenden die in Ihrem Account hinterlegten Kontaktdaten für die Bearbeitung. 
+                    Bei Änderungen aktualisieren Sie bitte Ihre Daten in den Account-Einstellungen.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-4 border-t">
+              <Button variant="outline" onClick={() => setIsServiceanfrageDialogOpen(false)} className="flex-1">
+                Abbrechen
+              </Button>
+              <Button onClick={handleServiceanfrageSubmit} className="flex-1">
+                <Send className="w-4 h-4 mr-2" />
+                Serviceanfrage senden
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </div>
+  );
+};
+
+export default MeineAnschluesse;

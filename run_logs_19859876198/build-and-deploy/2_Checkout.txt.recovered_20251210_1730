@@ -1,0 +1,71 @@
+﻿2025-12-02T13:15:06.5058712Z ##[group]Run actions/checkout@v4
+2025-12-02T13:15:06.5059633Z with:
+2025-12-02T13:15:06.5060095Z   repository: FloHo800101/netzportal-prototype
+2025-12-02T13:15:06.5060779Z   token: ***
+2025-12-02T13:15:06.5061147Z   ssh-strict: true
+2025-12-02T13:15:06.5061532Z   ssh-user: git
+2025-12-02T13:15:06.5061915Z   persist-credentials: true
+2025-12-02T13:15:06.5062352Z   clean: true
+2025-12-02T13:15:06.5062743Z   sparse-checkout-cone-mode: true
+2025-12-02T13:15:06.5063201Z   fetch-depth: 1
+2025-12-02T13:15:06.5063750Z   fetch-tags: false
+2025-12-02T13:15:06.5064143Z   show-progress: true
+2025-12-02T13:15:06.5064533Z   lfs: false
+2025-12-02T13:15:06.5064895Z   submodules: false
+2025-12-02T13:15:06.5065291Z   set-safe-directory: true
+2025-12-02T13:15:06.5065966Z ##[endgroup]
+2025-12-02T13:15:06.6152411Z Syncing repository: FloHo800101/netzportal-prototype
+2025-12-02T13:15:06.6154468Z ##[group]Getting Git version info
+2025-12-02T13:15:06.6155308Z Working directory is '/home/runner/work/netzportal-prototype/netzportal-prototype'
+2025-12-02T13:15:06.6156513Z [command]/usr/bin/git version
+2025-12-02T13:15:06.6235822Z git version 2.51.2
+2025-12-02T13:15:06.6261732Z ##[endgroup]
+2025-12-02T13:15:06.6276600Z Temporarily overriding HOME='/home/runner/work/_temp/281a1194-27b1-4a67-92f1-d4bd8c9ccf97' before making global git config changes
+2025-12-02T13:15:06.6278768Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-02T13:15:06.6289829Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/netzportal-prototype/netzportal-prototype
+2025-12-02T13:15:06.6325354Z Deleting the contents of '/home/runner/work/netzportal-prototype/netzportal-prototype'
+2025-12-02T13:15:06.6328726Z ##[group]Initializing the repository
+2025-12-02T13:15:06.6332721Z [command]/usr/bin/git init /home/runner/work/netzportal-prototype/netzportal-prototype
+2025-12-02T13:15:06.6435971Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-12-02T13:15:06.6437417Z hint: is subject to change. To configure the initial branch name to use in all
+2025-12-02T13:15:06.6439244Z hint: of your new repositories, which will suppress this warning, call:
+2025-12-02T13:15:06.6440342Z hint:
+2025-12-02T13:15:06.6441062Z hint: 	git config --global init.defaultBranch <name>
+2025-12-02T13:15:06.6442201Z hint:
+2025-12-02T13:15:06.6442794Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-12-02T13:15:06.6443899Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-12-02T13:15:06.6444577Z hint:
+2025-12-02T13:15:06.6444945Z hint: 	git branch -m <name>
+2025-12-02T13:15:06.6445419Z hint:
+2025-12-02T13:15:06.6446144Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-12-02T13:15:06.6447621Z Initialized empty Git repository in /home/runner/work/netzportal-prototype/netzportal-prototype/.git/
+2025-12-02T13:15:06.6452059Z [command]/usr/bin/git remote add origin https://github.com/FloHo800101/netzportal-prototype
+2025-12-02T13:15:06.6484342Z ##[endgroup]
+2025-12-02T13:15:06.6485077Z ##[group]Disabling automatic garbage collection
+2025-12-02T13:15:06.6488076Z [command]/usr/bin/git config --local gc.auto 0
+2025-12-02T13:15:06.6515547Z ##[endgroup]
+2025-12-02T13:15:06.6516241Z ##[group]Setting up auth
+2025-12-02T13:15:06.6522281Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-02T13:15:06.6551373Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-02T13:15:06.6903743Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-02T13:15:06.6932900Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-02T13:15:06.7151801Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-02T13:15:06.7180953Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-02T13:15:06.7413228Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-12-02T13:15:06.7447329Z ##[endgroup]
+2025-12-02T13:15:06.7448595Z ##[group]Fetching the repository
+2025-12-02T13:15:06.7457238Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +75eb7655fb57b25673edd18acedc8238661c75cc:refs/remotes/origin/main
+2025-12-02T13:15:06.9640700Z From https://github.com/FloHo800101/netzportal-prototype
+2025-12-02T13:15:06.9641713Z  * [new ref]         75eb7655fb57b25673edd18acedc8238661c75cc -> origin/main
+2025-12-02T13:15:06.9672532Z ##[endgroup]
+2025-12-02T13:15:06.9673243Z ##[group]Determining the checkout info
+2025-12-02T13:15:06.9674998Z ##[endgroup]
+2025-12-02T13:15:06.9680009Z [command]/usr/bin/git sparse-checkout disable
+2025-12-02T13:15:06.9719421Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-12-02T13:15:06.9744525Z ##[group]Checking out the ref
+2025-12-02T13:15:06.9817514Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-12-02T13:15:06.9861537Z Switched to a new branch 'main'
+2025-12-02T13:15:06.9863060Z branch 'main' set up to track 'origin/main'.
+2025-12-02T13:15:06.9872965Z ##[endgroup]
+2025-12-02T13:15:06.9916929Z [command]/usr/bin/git log -1 --format=%H
+2025-12-02T13:15:06.9940553Z 75eb7655fb57b25673edd18acedc8238661c75cc

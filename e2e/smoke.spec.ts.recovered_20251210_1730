@@ -1,0 +1,77 @@
+import { test, expect } from '@playwright/test';
+
+const roleLabels: Record<string, string> = {
+  kunde: 'Kunde',
+  installateur: 'Installateur',
+  kundenbetreuer: 'Kundenbetreuer',
+};
+
+const navByRole: Record<string, string[]> = {
+  kunde: ['Dashboard', 'Zählerstand', 'Nachrichten', 'Termine', 'Verbrauch', 'Anträge', 'Meine Daten', 'Rechtliches'],
+  installateur: ['Dashboard', 'Nachrichten', 'Termine', 'Anträge', 'Meine Daten'],
+  kundenbetreuer: ['Dashboard', 'Nachrichten', 'Termine', 'Anträge', 'Meine Daten'],
+};
+
+// Simple helper to open the RoleSwitcher and pick a role by its visible label.
+async function selectRole(page, label: string) {
+  // The RoleSwitcher shows the current role inside a SelectTrigger; click it to open options.
+  // We search for a visible element that contains the current role label and click its parent trigger.
+  // Fallback: click directly the SelectTrigger by role text.
+  const trigger = page.locator(`div:has-text("${label}")`).first();
+  await trigger.click();
+  // Then click the item in the dropdown
+  await page.locator(`text=${label}`).click();
+}
+
+test.describe('Smoke tests — navigation visibility per role', () => {
+  test.beforeEach(async ({ page }) => {
+    // Before the page loads, enable test auth and default role via localStorage
+    await page.addInitScript((role) => {
+      try {
+        localStorage.setItem('TEST_AUTH', '1');
+        localStorage.setItem('TEST_ROLE', role as string);
+      } catch (e) {
+        // ignore
+      }
+    }, 'kunde');
+    await page.goto('/');
+  });
+
+  for (const role of Object.keys(roleLabels)) {
+    test(`role ${role} sees expected navigation items`, async ({ page }) => {
+      const label = roleLabels[role];
+      // Update the TEST_ROLE before navigation to ensure AuthProvider picks it up.
+      await page.addInitScript((r) => {
+        try {
+          localStorage.setItem('TEST_AUTH', '1');
+          localStorage.setItem('TEST_ROLE', r as string);
+        } catch (e) {}
+      }, label.toLowerCase());
+      await page.reload();
+      // wait for the app shell to render and the sidebar to be present
+      await page.waitForSelector('header', { timeout: 10000 });
+      await page.waitForSelector('aside', { timeout: 10000 });
+      // small delay for UI updates
+      await page.waitForTimeout(200);
+
+      const expected = navByRole[role];
+      // Scope checks to the sidebar to avoid ambiguous matches elsewhere on the page
+      const sidebar = page.locator('aside').first();
+
+      for (const item of expected) {
+        const link = sidebar.getByRole('link', { name: item });
+        await expect(link.first()).toBeVisible({ timeout: 10000 });
+      }
+
+      // Also assert that items not expected are not visible in the sidebar
+      const allItems = Array.from(new Set(Object.values(navByRole).flat()));
+      const notExpected = allItems.filter((i) => !expected.includes(i));
+      for (const item of notExpected) {
+        const link = sidebar.getByRole('link', { name: item });
+        if (await link.count()) {
+          await expect(link.first()).not.toBeVisible({ timeout: 5000 });
+        }
+      }
+    });
+  }
+});

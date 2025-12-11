@@ -109,15 +109,48 @@ const timeSlotOptions = [
   "Samstag 09:00-12:00 (Notdienst)"
 ];
 
-const appointmentTypes = [
-  { value: "beratung", label: "Beratungstermin", icon: MessageCircle, description: "Allgemeine Beratung zu Tarifen, Anlagen, etc." },
-  { value: "stoerung", label: "Störungsbehebung", icon: AlertTriangle, description: "Dringender Vor-Ort-Termin bei technischen Problemen" },
-  { value: "wartung", label: "Wartung/Inspektion", icon: Wrench, description: "Planmäßige Wartungsarbeiten oder Inspektionen" },
-  { value: "anschluss", label: "Netzanschluss", icon: Zap, description: "Installation oder Änderung von Netzanschlüssen" },
-  { value: "zaehler", label: "Zählerangelegenheiten", icon: Settings, description: "Zählerwechsel, Zählerablesung, Zählerprüfung" },
-  { value: "inbetriebnahme", label: "Inbetriebnahme", icon: CheckCircle, description: "Inbetriebnahme neuer Anlagen oder Anlagenteile" },
-  { value: "sonstiges", label: "Sonstiges", icon: FileText, description: "Andere termingebundene Anliegen" }
+const appointmentCategories = [
+  { value: "installation", label: "Installation & Inbetriebnahme" },
+  { value: "wartung", label: "Wartung & Störung" },
+  { value: "beratung", label: "Beratung & Planung" },
+  { value: "dokumentation", label: "Dokumentation & Prüfung" },
+  { value: "sonstiges", label: "Sonstiges" }
 ];
+
+const appointmentReasons: Record<string, Array<{ value: string; label: string }>> = {
+  installation: [
+    { value: "inbetriebnahme-pv", label: "Inbetriebnahme PV-Anlage" },
+    { value: "inbetriebnahme-wp", label: "Inbetriebnahme Wärmepumpe" },
+    { value: "inbetriebnahme-wallbox", label: "Inbetriebnahme Wallbox" },
+    { value: "zaehlerwechsel", label: "Zählerwechsel / Zählertausch" },
+    { value: "netzanschluss-neubau", label: "Netzanschluss Neubau" },
+    { value: "leistungserhoehung", label: "Leistungserhöhung bestehender Anschluss" }
+  ],
+  wartung: [
+    { value: "zaehlerablesung", label: "Zählerablesung vor Ort" },
+    { value: "stoerung", label: "Störungsbehebung / Technischer Defekt" },
+    { value: "wartung-hak", label: "Wartung Hausanschlusskasten" },
+    { value: "spannungspruefung", label: "Spannungsprobleme / Netzqualität prüfen" }
+  ],
+  beratung: [
+    { value: "beratung-netzanschluss", label: "Beratungsgespräch Netzanschluss" },
+    { value: "vor-ort-begehung", label: "Vor-Ort-Begehung / Standortprüfung" },
+    { value: "machbarkeitspruefung", label: "Technische Machbarkeitsprüfung" },
+    { value: "netzanschlussberechnung", label: "Netzanschlussberechnung" }
+  ],
+  dokumentation: [
+    { value: "abnahme", label: "Abnahme nach Installation" },
+    { value: "messstellenbetrieb", label: "Messstellenbetrieb prüfen" },
+    { value: "einspeisemanagement", label: "Einspeisemanagement-Einstellung" },
+    { value: "zaehlerschrank", label: "Zählerschrank-Modernisierung" }
+  ],
+  sonstiges: [
+    { value: "baustelle", label: "Baustellenversorgung (temporär)" },
+    { value: "zufahrt", label: "Grundstückszufahrt / Netzbauarbeiten" },
+    { value: "demontage", label: "Demontage Anschluss (bei Rückbau)" },
+    { value: "kabelschaden", label: "Kabelschaden / Tiefbauarbeiten" }
+  ]
+};
 
 const Termine = () => {
   const [showForm, setShowForm] = useState(false);
@@ -126,7 +159,8 @@ const Termine = () => {
   const [sentRequests, setSentRequests] = useState(defaultSentRequests);
   const [newRequest, setNewRequest] = useState({
     title: "",
-    type: "",
+    category: "",
+    reason: "",
     description: "",
     urgency: "normal",
     preferredTimes: [] as string[],
@@ -184,12 +218,15 @@ const Termine = () => {
   };
 
   const submitRequest = () => {
+    const selectedCategory = appointmentCategories.find(c => c.value === newRequest.category);
+    const selectedReason = appointmentReasons[newRequest.category]?.find(r => r.value === newRequest.reason);
+    
     const request = {
       id: Date.now(),
       title: newRequest.title,
       preferredTimes: newRequest.preferredTimes,
       requestedDate: newRequest.urgency === "urgent" ? "Dringend - diese Woche" : "Nach Verfügbarkeit",
-      type: appointmentTypes.find(t => t.value === newRequest.type)?.label || newRequest.type,
+      type: `${selectedCategory?.label} - ${selectedReason?.label}`,
       to: newRequest.to,
       direction: "sent",
       status: "Wartend",
@@ -272,48 +309,67 @@ const Termine = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
+                {/* Erste Zeile: Kategorie und Termingrund nebeneinander */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Betreff</label>
-                    <input
-                      type="text"
-                      value={newRequest.title}
-                      onChange={(e) => setNewRequest(prev => ({ ...prev, title: e.target.value }))}
-                      className="w-full p-3 border rounded-lg"
-                      placeholder="z.B. Inbetriebnahme PV-Anlage"
-                    />
+                    <Label htmlFor="category">Kategorie</Label>
+                    <Select 
+                      value={newRequest.category} 
+                      onValueChange={(value) => setNewRequest(prev => ({ ...prev, category: value, reason: "" }))}
+                    >
+                      <SelectTrigger id="category">
+                        <SelectValue placeholder="Kategorie wählen..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {appointmentCategories.map((cat) => (
+                          <SelectItem key={cat.value} value={cat.value}>
+                            {cat.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-2">Termingrund</label>
+                    <Label htmlFor="reason">Termingrund</Label>
                     <Select 
-                      value={newRequest.type} 
-                      onValueChange={(value) => setNewRequest(prev => ({ ...prev, type: value }))}
+                      value={newRequest.reason} 
+                      onValueChange={(value) => setNewRequest(prev => ({ ...prev, reason: value }))}
+                      disabled={!newRequest.category}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Bitte wählen..." />
+                      <SelectTrigger id="reason">
+                        <SelectValue placeholder={newRequest.category ? "Termingrund wählen..." : "Zuerst Kategorie wählen"} />
                       </SelectTrigger>
                       <SelectContent>
-                        {appointmentTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            <div className="flex items-center">
-                              <type.icon className="w-4 h-4 mr-2 text-blue-600" />
-                              {type.label}
-                            </div>
+                        {newRequest.category && appointmentReasons[newRequest.category]?.map((reason) => (
+                          <SelectItem key={reason.value} value={reason.value}>
+                            {reason.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
+
+                {/* Zweite Zeile: Betreff */}
+                <div>
+                  <Label htmlFor="title">Betreff</Label>
+                  <Input
+                    id="title"
+                    type="text"
+                    value={newRequest.title}
+                    onChange={(e) => setNewRequest(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="z.B. Terminvereinbarung für Inbetriebnahme"
+                  />
+                </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Empfänger</label>
+                  <Label htmlFor="recipient">Empfänger</Label>
                   <Select 
                     value={newRequest.to} 
                     onValueChange={(value) => setNewRequest(prev => ({ ...prev, to: value }))}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="recipient">
                       <SelectValue placeholder="An wen richtet sich Ihre Anfrage?" />
                     </SelectTrigger>
                     <SelectContent>
@@ -325,19 +381,19 @@ const Termine = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Beschreibung</label>
-                  <textarea
+                  <Label htmlFor="description">Beschreibung</Label>
+                  <Textarea
+                    id="description"
                     rows={3}
                     value={newRequest.description}
                     onChange={(e) => setNewRequest(prev => ({ ...prev, description: e.target.value }))}
-                    className="w-full p-3 border rounded-lg"
                     placeholder="Bitte beschreiben Sie Ihr Anliegen..."
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Dringlichkeit</label>
-                  <div className="flex gap-4">
+                  <Label>Dringlichkeit</Label>
+                  <div className="flex gap-4 mt-2">
                     <label className="flex items-center">
                       <input
                         type="radio"
@@ -364,10 +420,10 @@ const Termine = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <Label>
                     Wunschzeiten ({newRequest.preferredTimes.length} ausgewählt)
-                  </label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  </Label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
                     {timeSlotOptions.map((slot) => (
                       <label key={slot} className="flex items-center space-x-2 text-sm">
                         <Checkbox
@@ -383,7 +439,7 @@ const Termine = () => {
                 <div className="flex gap-3 pt-4 border-t">
                   <Button 
                     onClick={submitRequest}
-                    disabled={!newRequest.title || !newRequest.type || !newRequest.to}
+                    disabled={!newRequest.title || !newRequest.category || !newRequest.reason || !newRequest.to}
                     className="flex-1"
                   >
                     <Send className="w-4 h-4 mr-2" />
