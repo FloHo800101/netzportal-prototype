@@ -12,6 +12,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Zaehlerstand from "./pages/Zaehlerstand";
 import Nachrichten from "./pages/Nachrichten";
+import NachrichtenNew from "./pages/NachrichtenNew";
 import NachrichtenTest from "./pages/NachrichtenTest";
 import NachrichtenSimple from "./pages/NachrichtenSimple";
 import Termine from "./pages/Termine";
@@ -58,7 +59,7 @@ const App = () => (
                             <Route path="/zaehlerstand" element={<Zaehlerstand />} />
                             <Route path="/nachrichten-test" element={<NachrichtenTest />} />
                             <Route path="/nachrichten-simple" element={<NachrichtenSimple />} />
-                            <Route path="/nachrichten" element={<NachrichtenSimple />} />
+                            <Route path="/nachrichten" element={<NachrichtenNew />} />
                             <Route path="/termine" element={<Termine />} />
                             <Route path="/verbrauch" element={<Verbrauch />} />
                             <Route path="/meine-anschluesse" element={<MeineAnschluesse />} />
