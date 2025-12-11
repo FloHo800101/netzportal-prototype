@@ -33,10 +33,12 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
       
-      - name: Start dev server and run tests
+      - name: Start dev server
+        run: npm run dev &
+      - name: Wait for dev server
+        run: npx wait-on http://localhost:8080
+      - name: Run tests
         run: |
-          npm run dev &
-          sleep 10
           npm run test:core
           npm run test:pages
           npm run test:antrag
