@@ -69,13 +69,13 @@ test.describe('Netzportal Smoke Tests', () => {
     await page.goto('/#/nachrichten');
     await page.waitForLoadState('networkidle');
     
-    // Check for messages page content - look for actual content on the page
+    // Check for new 3-tab structure
     const pageContent = await page.textContent('body');
     const hasNachrichtenContent = pageContent && (
-      pageContent.includes('Nachrichten') || 
-      pageContent.includes('Geplante Netzwartung') ||
-      pageContent.includes('Terminvorschlag') ||
-      pageContent.includes('Energieverbrauch')
+      pageContent.includes('Benachrichtigungen') || 
+      pageContent.includes('Zu erledigen') ||
+      pageContent.includes('Postausgang') ||
+      pageContent.includes('Eingang')
     );
     
     expect(hasNachrichtenContent).toBe(true);
