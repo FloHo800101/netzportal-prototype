@@ -13,7 +13,9 @@ import {
   Clock,
   AlertTriangle,
   Check,
-  X
+  X,
+  Send,
+  MessageSquare
 } from "lucide-react";
 
 // Dummy-Daten für verschiedene Kategorien
@@ -151,11 +153,54 @@ const notificationsData = {
       type: "info",
       read: true
     }
+  ],
+  postausgang: [
+    {
+      id: 60,
+      title: "Serviceanfrage: MaStR Registrierung",
+      description: "Anfrage zur MaStR Registrierung für PV-Anlage (Zähler: 5555666677) gesendet.",
+      date: "11.12.2025",
+      time: "09:15",
+      type: "service",
+      status: "Wartend",
+      recipient: "Kundenbetreuer"
+    },
+    {
+      id: 61,
+      title: "Terminanfrage: Beratung Direktvermarktung",
+      description: "Terminanfrage für Beratungsgespräch zu Direktvermarktungsoptionen gestellt.",
+      date: "10.12.2025",
+      time: "14:20",
+      type: "appointment",
+      status: "In Bearbeitung",
+      recipient: "Kundenbetreuer"
+    },
+    {
+      id: 62,
+      title: "Zählerstand gemeldet",
+      description: "Zählerstand für Hausanschluss (1234567890): 12.543 kWh übermittelt.",
+      date: "09.12.2025",
+      time: "16:45",
+      type: "meterreading",
+      status: "Bestätigt",
+      recipient: "Messstellenbetreiber"
+    },
+    {
+      id: 63,
+      title: "Serviceanfrage: Rechnungskorrektur",
+      description: "Anfrage zur Korrektur der Rechnung vom November 2025 gesendet.",
+      date: "05.12.2025",
+      time: "11:30",
+      type: "service",
+      status: "Beantwortet",
+      recipient: "Buchhaltung"
+    }
   ]
 };
 
 const NachrichtenNew = () => {
   const [activeTab, setActiveTab] = useState("todo");
+  const [eingangFilter, setEingangFilter] = useState("alle");
   const [notifications, setNotifications] = useState(notificationsData);
 
   const getTypeColor = (type: string) => {
@@ -192,6 +237,13 @@ const NachrichtenNew = () => {
 
   const unreadCount = {
     todo: notifications.todo.length,
+    postausgang: notifications.postausgang.length,
+    eingang: notifications.antraege.filter(n => !n.read).length +
+             notifications.termine.filter(n => !n.read).length +
+             notifications.rechnungen.filter(n => !n.read).length +
+             notifications.anlagen.filter(n => !n.read).length +
+             notifications.news.filter(n => !n.read).length,
+    // Für Filter-Badges
     antraege: notifications.antraege.filter(n => !n.read).length,
     termine: notifications.termine.filter(n => !n.read).length,
     rechnungen: notifications.rechnungen.filter(n => !n.read).length,
@@ -208,7 +260,7 @@ const NachrichtenNew = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid">
             <TabsTrigger value="todo" className="relative">
               <CheckCircle2 className="w-4 h-4 mr-2" />
               Zu erledigen
@@ -216,39 +268,18 @@ const NachrichtenNew = () => {
                 <Badge className="ml-2" variant="destructive">{unreadCount.todo}</Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="antraege" className="relative">
+            <TabsTrigger value="postausgang" className="relative">
+              <Send className="w-4 h-4 mr-2" />
+              Postausgang
+              {unreadCount.postausgang > 0 && (
+                <Badge className="ml-2" variant="secondary">{unreadCount.postausgang}</Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="eingang" className="relative">
               <FileText className="w-4 h-4 mr-2" />
-              Anträge
-              {unreadCount.antraege > 0 && (
-                <Badge className="ml-2" variant="secondary">{unreadCount.antraege}</Badge>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="termine">
-              <Calendar className="w-4 h-4 mr-2" />
-              Termine
-              {unreadCount.termine > 0 && (
-                <Badge className="ml-2" variant="secondary">{unreadCount.termine}</Badge>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="rechnungen">
-              <CreditCard className="w-4 h-4 mr-2" />
-              Rechnungen
-              {unreadCount.rechnungen > 0 && (
-                <Badge className="ml-2" variant="secondary">{unreadCount.rechnungen}</Badge>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="anlagen">
-              <Zap className="w-4 h-4 mr-2" />
-              Anlagen
-              {unreadCount.anlagen > 0 && (
-                <Badge className="ml-2" variant="secondary">{unreadCount.anlagen}</Badge>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="news">
-              <Newspaper className="w-4 h-4 mr-2" />
-              News
-              {unreadCount.news > 0 && (
-                <Badge className="ml-2" variant="secondary">{unreadCount.news}</Badge>
+              Eingang
+              {unreadCount.eingang > 0 && (
+                <Badge className="ml-2" variant="secondary">{unreadCount.eingang}</Badge>
               )}
             </TabsTrigger>
           </TabsList>
@@ -300,6 +331,340 @@ const NachrichtenNew = () => {
                 </Card>
               ))
             )}
+          </TabsContent>
+
+          {/* Postausgang Tab */}
+          <TabsContent value="postausgang" className="space-y-4 mt-6">
+            {notifications.postausgang.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <Send className="w-16 h-16 text-gray-400 mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Noch keine Anfragen gesendet</h3>
+                  <p className="text-muted-foreground">Ihre gesendeten Serviceanfragen und Terminanfragen erscheinen hier.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              notifications.postausgang.map((item) => {
+                const getStatusColor = (status: string) => {
+                  switch (status) {
+                    case "Bestätigt": return "bg-green-100 text-green-800";
+                    case "Beantwortet": return "bg-blue-100 text-blue-800";
+                    case "In Bearbeitung": return "bg-yellow-100 text-yellow-800";
+                    case "Wartend": return "bg-gray-100 text-gray-800";
+                    default: return "bg-gray-100 text-gray-800";
+                  }
+                };
+
+                const getTypeIcon = (type: string) => {
+                  switch (type) {
+                    case "service": return <MessageSquare className="w-5 h-5" />;
+                    case "appointment": return <Calendar className="w-5 h-5" />;
+                    case "meterreading": return <Zap className="w-5 h-5" />;
+                    default: return <Send className="w-5 h-5" />;
+                  }
+                };
+
+                const getTypeLabel = (type: string) => {
+                  switch (type) {
+                    case "service": return "Serviceanfrage";
+                    case "appointment": return "Terminanfrage";
+                    case "meterreading": return "Zählerstandsmeldung";
+                    default: return "Anfrage";
+                  }
+                };
+
+                return (
+                  <Card key={item.id} className="border-l-4 border-l-blue-500">
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="p-2 rounded-full bg-blue-50 text-blue-600">
+                              {getTypeIcon(item.type)}
+                            </div>
+                            <div>
+                              <Badge variant="outline" className="mb-1">
+                                {getTypeLabel(item.type)}
+                              </Badge>
+                              <CardTitle className="text-lg">{item.title}</CardTitle>
+                            </div>
+                          </div>
+                          <CardDescription>{item.description}</CardDescription>
+                        </div>
+                        <Badge className={getStatusColor(item.status)}>
+                          {item.status}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardFooter className="flex items-center justify-between text-sm text-muted-foreground border-t pt-4">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4" />
+                          <span>Gesendet: {item.date} um {item.time}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Send className="w-4 h-4" />
+                          <span>An: {item.recipient}</span>
+                        </div>
+                      </div>
+                      <Button variant="outline" size="sm">
+                        Details ansehen
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                );
+              })
+            )}
+          </TabsContent>
+
+          {/* Eingang Tab mit Filtern */}
+          <TabsContent value="eingang" className="space-y-4 mt-6">
+            {/* Filter Pills */}
+            <div className="flex flex-wrap gap-2 mb-6 p-4 bg-muted/30 rounded-lg">
+              <Button 
+                variant={eingangFilter === "alle" ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setEingangFilter("alle")}
+              >
+                Alle
+                <Badge className="ml-2" variant="secondary">{unreadCount.eingang}</Badge>
+              </Button>
+              <Button 
+                variant={eingangFilter === "antraege" ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setEingangFilter("antraege")}
+              >
+                <FileText className="w-4 h-4 mr-1" />
+                Anträge
+                {unreadCount.antraege > 0 && (
+                  <Badge className="ml-2" variant="secondary">{unreadCount.antraege}</Badge>
+                )}
+              </Button>
+              <Button 
+                variant={eingangFilter === "termine" ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setEingangFilter("termine")}
+              >
+                <Calendar className="w-4 h-4 mr-1" />
+                Termine
+                {unreadCount.termine > 0 && (
+                  <Badge className="ml-2" variant="secondary">{unreadCount.termine}</Badge>
+                )}
+              </Button>
+              <Button 
+                variant={eingangFilter === "rechnungen" ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setEingangFilter("rechnungen")}
+              >
+                <CreditCard className="w-4 h-4 mr-1" />
+                Rechnungen
+                {unreadCount.rechnungen > 0 && (
+                  <Badge className="ml-2" variant="secondary">{unreadCount.rechnungen}</Badge>
+                )}
+              </Button>
+              <Button 
+                variant={eingangFilter === "anlagen" ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setEingangFilter("anlagen")}
+              >
+                <Zap className="w-4 h-4 mr-1" />
+                Anlagen
+                {unreadCount.anlagen > 0 && (
+                  <Badge className="ml-2" variant="secondary">{unreadCount.anlagen}</Badge>
+                )}
+              </Button>
+              <Button 
+                variant={eingangFilter === "news" ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setEingangFilter("news")}
+              >
+                <Newspaper className="w-4 h-4 mr-1" />
+                News
+                {unreadCount.news > 0 && (
+                  <Badge className="ml-2" variant="secondary">{unreadCount.news}</Badge>
+                )}
+              </Button>
+            </div>
+
+            {/* Anträge */}
+            {(eingangFilter === "alle" || eingangFilter === "antraege") && notifications.antraege.map((item) => (
+              <Card key={`eingang-antraege-${item.id}`} className={!item.read ? "border-l-4 border-l-blue-500" : ""}>
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <Badge variant="outline" className="mb-2">
+                        <FileText className="w-3 h-3 mr-1" />
+                        Antrag
+                      </Badge>
+                      <CardTitle className="text-lg">{item.title}</CardTitle>
+                      <CardDescription>{item.description}</CardDescription>
+                    </div>
+                    <div className={`p-2 rounded-full ${getTypeColor(item.type)}`}>
+                      {item.type === "success" && <CheckCircle2 className="w-5 h-5" />}
+                      {item.type === "info" && <FileText className="w-5 h-5" />}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardFooter className="flex items-center justify-between text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    <span>{item.date} um {item.time}</span>
+                  </div>
+                  {!item.read && (
+                    <Button variant="ghost" size="sm" onClick={() => markAsRead('antraege', item.id)}>
+                      Als gelesen markieren
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            ))}
+
+            {/* Termine */}
+            {(eingangFilter === "alle" || eingangFilter === "termine") && notifications.termine.map((item) => (
+              <Card key={`eingang-termine-${item.id}`} className={!item.read ? "border-l-4 border-l-blue-500" : ""}>
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <Badge variant="outline" className="mb-2">
+                        <Calendar className="w-3 h-3 mr-1" />
+                        Termin
+                      </Badge>
+                      <CardTitle className="text-lg">{item.title}</CardTitle>
+                      <CardDescription>{item.description}</CardDescription>
+                    </div>
+                    <div className={`p-2 rounded-full ${getTypeColor(item.type)}`}>
+                      {item.type === "action" && <Calendar className="w-5 h-5" />}
+                      {item.type === "success" && <CheckCircle2 className="w-5 h-5" />}
+                    </div>
+                  </div>
+                </CardHeader>
+                {item.actions && (
+                  <CardContent className="flex gap-2">
+                    {item.actions.map((action: any, idx: number) => (
+                      <Button key={idx} variant={action.variant || "default"} size="sm">
+                        {action.label}
+                      </Button>
+                    ))}
+                  </CardContent>
+                )}
+                <CardFooter className="flex items-center justify-between text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    <span>{item.date} um {item.time}</span>
+                  </div>
+                  {!item.read && (
+                    <Button variant="ghost" size="sm" onClick={() => markAsRead('termine', item.id)}>
+                      Als gelesen markieren
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            ))}
+
+            {/* Rechnungen */}
+            {(eingangFilter === "alle" || eingangFilter === "rechnungen") && notifications.rechnungen.map((item) => (
+              <Card key={`eingang-rechnungen-${item.id}`} className={!item.read ? "border-l-4 border-l-blue-500" : ""}>
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <Badge variant="outline" className="mb-2">
+                        <CreditCard className="w-3 h-3 mr-1" />
+                        Rechnung
+                      </Badge>
+                      <CardTitle className="text-lg">{item.title}</CardTitle>
+                      <CardDescription>{item.description}</CardDescription>
+                    </div>
+                    <div className={`p-2 rounded-full ${getTypeColor(item.type)}`}>
+                      {item.type === "info" && <CreditCard className="w-5 h-5" />}
+                      {item.type === "success" && <CheckCircle2 className="w-5 h-5" />}
+                    </div>
+                  </div>
+                </CardHeader>
+                {item.action && (
+                  <CardContent>
+                    <Button variant="outline" size="sm" onClick={() => window.location.href = item.action.link}>
+                      {item.action.label}
+                    </Button>
+                  </CardContent>
+                )}
+                <CardFooter className="flex items-center justify-between text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    <span>{item.date} um {item.time}</span>
+                  </div>
+                  {!item.read && (
+                    <Button variant="ghost" size="sm" onClick={() => markAsRead('rechnungen', item.id)}>
+                      Als gelesen markieren
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            ))}
+
+            {/* Anlagen */}
+            {(eingangFilter === "alle" || eingangFilter === "anlagen") && notifications.anlagen.map((item) => (
+              <Card key={`eingang-anlagen-${item.id}`} className={!item.read ? "border-l-4 border-l-blue-500" : ""}>
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <Badge variant="outline" className="mb-2">
+                        <Zap className="w-3 h-3 mr-1" />
+                        Anlage
+                      </Badge>
+                      <CardTitle className="text-lg">{item.title}</CardTitle>
+                      <CardDescription>{item.description}</CardDescription>
+                    </div>
+                    <div className={`p-2 rounded-full ${getTypeColor(item.type)}`}>
+                      {item.type === "warning" && <AlertTriangle className="w-5 h-5" />}
+                      {item.type === "info" && <Zap className="w-5 h-5" />}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardFooter className="flex items-center justify-between text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    <span>{item.date} um {item.time}</span>
+                  </div>
+                  {!item.read && (
+                    <Button variant="ghost" size="sm" onClick={() => markAsRead('anlagen', item.id)}>
+                      Als gelesen markieren
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            ))}
+
+            {/* News */}
+            {(eingangFilter === "alle" || eingangFilter === "news") && notifications.news.map((item) => (
+              <Card key={`eingang-news-${item.id}`} className={!item.read ? "border-l-4 border-l-blue-500" : ""}>
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <Badge variant="outline" className="mb-2">
+                        <Newspaper className="w-3 h-3 mr-1" />
+                        News
+                      </Badge>
+                      <CardTitle className="text-lg">{item.title}</CardTitle>
+                      <CardDescription>{item.description}</CardDescription>
+                    </div>
+                    <div className={`p-2 rounded-full ${getTypeColor(item.type)}`}>
+                      <Newspaper className="w-5 h-5" />
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardFooter className="flex items-center justify-between text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    <span>{item.date} um {item.time}</span>
+                  </div>
+                  {!item.read && (
+                    <Button variant="ghost" size="sm" onClick={() => markAsRead('news', item.id)}>
+                      Als gelesen markieren
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            ))}
           </TabsContent>
 
           {/* Anträge Tab */}

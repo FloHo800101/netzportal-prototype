@@ -7,6 +7,7 @@ import { Textarea } from "../components/ui/textarea";
 import { Badge } from "../components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Checkbox } from "../components/ui/checkbox";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
 import { 
   Calendar, 
   Clock, 
@@ -153,7 +154,7 @@ const appointmentReasons: Record<string, Array<{ value: string; label: string }>
 };
 
 const Termine = () => {
-  const [showForm, setShowForm] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("received");
   const [receivedAppointments, setReceivedAppointments] = useState(defaultReceivedAppointments);
   const [sentRequests, setSentRequests] = useState(defaultSentRequests);
@@ -236,8 +237,16 @@ const Termine = () => {
 
     const updated = [request, ...sentRequests];
     updateSentRequests(updated);
-    setNewRequest({ title: "", type: "", description: "", urgency: "normal", preferredTimes: [], to: "" });
-    setShowForm(false);
+    setNewRequest({ 
+      title: "", 
+      category: "",
+      reason: "",
+      description: "", 
+      urgency: "normal", 
+      preferredTimes: [], 
+      to: "" 
+    });
+    setIsDialogOpen(false);
   };
 
   const confirmAppointment = (id: number) => {
@@ -262,53 +271,24 @@ const Termine = () => {
             <h1 className="text-3xl font-bold text-foreground mb-2">Meine Termine</h1>
             <p className="text-muted-foreground">Terminübersicht und Terminanfragen</p>
           </div>
-          <Button onClick={() => setShowForm(!showForm)}>
-            <Send className="w-4 h-4 mr-2" />
-            {showForm ? "Abbrechen" : "Terminanfrage stellen"}
-          </Button>
-        </div>
-
-        {/* Tab Navigation */}
-        <div className="mb-6">
-          <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
-            <button
-              onClick={() => setActiveTab("received")}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                activeTab === "received" 
-                  ? "bg-white text-blue-600 shadow-sm" 
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              <Inbox className="w-4 h-4 mr-2 inline" />
-              Erhaltene Termine ({receivedAppointments.filter(apt => apt.status !== "Abgelehnt").length})
-            </button>
-            <button
-              onClick={() => setActiveTab("sent")}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                activeTab === "sent" 
-                  ? "bg-white text-blue-600 shadow-sm" 
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              <Send className="w-4 h-4 mr-2 inline" />
-              Meine Anfragen ({sentRequests.length})
-            </button>
-          </div>
-        </div>
-
-        {showForm && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Send className="w-5 h-5 mr-2 text-blue-600" />
-                Neue Terminanfrage stellen
-              </CardTitle>
-              <CardDescription>
-                Stellen Sie hier Ihre Terminanfrage für verschiedene Services
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="gap-2">
+                <Send className="w-4 h-4" />
+                Terminanfrage stellen
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center">
+                  <Send className="w-5 h-5 mr-2 text-blue-600" />
+                  Neue Terminanfrage stellen
+                </DialogTitle>
+                <DialogDescription>
+                  Stellen Sie hier Ihre Terminanfrage für verschiedene Services
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-6 py-4">
                 {/* Erste Zeile: Kategorie und Termingrund nebeneinander */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -423,7 +403,7 @@ const Termine = () => {
                   <Label>
                     Wunschzeiten ({newRequest.preferredTimes.length} ausgewählt)
                   </Label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
+                  <div className="grid grid-cols-2 gap-2 mt-2">
                     {timeSlotOptions.map((slot) => (
                       <label key={slot} className="flex items-center space-x-2 text-sm">
                         <Checkbox
@@ -445,14 +425,42 @@ const Termine = () => {
                     <Send className="w-4 h-4 mr-2" />
                     Anfrage senden
                   </Button>
-                  <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                     Abbrechen
                   </Button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        )}
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="mb-6">
+          <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
+            <button
+              onClick={() => setActiveTab("received")}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeTab === "received" 
+                  ? "bg-white text-blue-600 shadow-sm" 
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              <Inbox className="w-4 h-4 mr-2 inline" />
+              Erhaltene Termine ({receivedAppointments.filter(apt => apt.status !== "Abgelehnt").length})
+            </button>
+            <button
+              onClick={() => setActiveTab("sent")}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeTab === "sent" 
+                  ? "bg-white text-blue-600 shadow-sm" 
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              <Send className="w-4 h-4 mr-2 inline" />
+              Meine Anfragen ({sentRequests.length})
+            </button>
+          </div>
+        </div>
 
         {/* Tab Content - Erhaltene Termine */}
         {activeTab === "received" && (
@@ -557,7 +565,7 @@ const Termine = () => {
                   <Send className="w-12 h-12 mx-auto text-gray-400 mb-4" />
                   <h3 className="text-lg font-medium mb-2">Keine gesendeten Anfragen</h3>
                   <p className="text-gray-600 mb-4">Sie haben noch keine Terminanfragen gestellt.</p>
-                  <Button onClick={() => setShowForm(true)}>
+                  <Button onClick={() => setIsDialogOpen(true)}>
                     <Send className="w-4 h-4 mr-2" />
                     Erste Anfrage stellen
                   </Button>

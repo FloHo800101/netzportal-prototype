@@ -1,11 +1,12 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { FileText, Zap, Calendar, Download, Home, Thermometer, Sun, Calculator, Database, UserCheck, Receipt, TrendingUp, Headphones } from "lucide-react";
+import { FileText, Zap, Calendar, Download, Home, Thermometer, Sun, Calculator, Database, UserCheck, Receipt, TrendingUp, Headphones, Check, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
 import { Label } from "../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Textarea } from "../components/ui/textarea";
+import { Input } from "../components/ui/input";
 import { useState } from "react";
 
 const anschluesse = [
@@ -98,9 +99,16 @@ const serviceAnfragen = [
 
 const MeineAnschluesse = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isZaehlerstandDialogOpen, setIsZaehlerstandDialogOpen] = useState(false);
   const [selectedAnschluss, setSelectedAnschluss] = useState("");
   const [selectedServiceArt, setSelectedServiceArt] = useState("");
   const [beschreibung, setBeschreibung] = useState("");
+  const [zaehlerstandSubmitted, setZaehlerstandSubmitted] = useState(false);
+  
+  // Zählerstand Form States
+  const [selectedZaehler, setSelectedZaehler] = useState("");
+  const [zaehlerstand, setZaehlerstand] = useState("");
+  const [ablesedatum, setAblesedatum] = useState("");
 
   const handleSubmit = () => {
     // Hier würde die Serviceanfrage abgeschickt werden
@@ -115,6 +123,24 @@ const MeineAnschluesse = () => {
     setBeschreibung("");
   };
 
+  const handleZaehlerstandSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log({
+      zaehler: selectedZaehler,
+      zaehlerstand: zaehlerstand,
+      datum: ablesedatum
+    });
+    setZaehlerstandSubmitted(true);
+  };
+
+  const handleZaehlerstandDialogClose = () => {
+    setIsZaehlerstandDialogOpen(false);
+    setZaehlerstandSubmitted(false);
+    setSelectedZaehler("");
+    setZaehlerstand("");
+    setAblesedatum("");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -123,74 +149,181 @@ const MeineAnschluesse = () => {
             <h1 className="text-3xl font-bold text-foreground mb-2">Meine Anschlüsse & Verträge</h1>
             <p className="text-muted-foreground">Übersicht über Ihre Netzanschlüsse und Vertragsdetails</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="gap-2">
-                <Headphones className="w-4 h-4" />
-                Serviceanfrage stellen
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
-              <DialogHeader>
-                <DialogTitle>Serviceanfrage stellen</DialogTitle>
-                <DialogDescription>
-                  Stellen Sie eine Serviceanfrage zu einem Ihrer Anschlüsse oder Verträge
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="anschluss">Anschluss / Zählernummer</Label>
-                  <Select value={selectedAnschluss} onValueChange={setSelectedAnschluss}>
-                    <SelectTrigger id="anschluss">
-                      <SelectValue placeholder="Anschluss auswählen" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {anschluesse.map((anschluss) => (
-                        <SelectItem key={anschluss.id} value={anschluss.zaehlerNummer}>
-                          {anschluss.typ} - {anschluss.zaehlerNummer}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="serviceart">Art der Serviceanfrage</Label>
-                  <Select value={selectedServiceArt} onValueChange={setSelectedServiceArt}>
-                    <SelectTrigger id="serviceart">
-                      <SelectValue placeholder="Serviceart auswählen" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {serviceAnfragen.map((service) => (
-                        <SelectItem key={service.value} value={service.value}>
-                          {service.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+          <div className="flex gap-2">
+            <Dialog open={isZaehlerstandDialogOpen} onOpenChange={setIsZaehlerstandDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <Calculator className="w-4 h-4" />
+                  Zählerstand melden
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                {!zaehlerstandSubmitted ? (
+                  <>
+                    <DialogHeader>
+                      <DialogTitle>Zählerstand übermitteln</DialogTitle>
+                      <DialogDescription>
+                        Geben Sie Ihren aktuellen Zählerstand ein
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleZaehlerstandSubmit} className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="zaehler">Zähler auswählen</Label>
+                        <Select value={selectedZaehler} onValueChange={setSelectedZaehler}>
+                          <SelectTrigger id="zaehler">
+                            <SelectValue placeholder="Zähler auswählen" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {anschluesse.map((anschluss) => (
+                              <SelectItem key={anschluss.id} value={anschluss.zaehlerNummer}>
+                                {anschluss.typ} - {anschluss.zaehlerNummer}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="beschreibung">Beschreibung / Anliegen</Label>
-                  <Textarea
-                    id="beschreibung"
-                    placeholder="Beschreiben Sie hier Ihr Anliegen..."
-                    value={beschreibung}
-                    onChange={(e) => setBeschreibung(e.target.value)}
-                    rows={5}
-                  />
+                      <div className="space-y-2">
+                        <Label htmlFor="zaehlerstand">Aktueller Zählerstand (kWh)</Label>
+                        <Input 
+                          id="zaehlerstand" 
+                          type="number" 
+                          placeholder="12345" 
+                          value={zaehlerstand}
+                          onChange={(e) => setZaehlerstand(e.target.value)}
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="ablesedatum">Ablesedatum</Label>
+                        <Input 
+                          id="ablesedatum" 
+                          type="date" 
+                          value={ablesedatum}
+                          onChange={(e) => setAblesedatum(e.target.value)}
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="foto">Foto hochladen (optional)</Label>
+                        <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
+                          <Upload className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
+                          <p className="text-sm text-muted-foreground">Foto des Zählerstands hinzufügen</p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 pt-4">
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          className="flex-1"
+                          onClick={handleZaehlerstandDialogClose}
+                        >
+                          Abbrechen
+                        </Button>
+                        <Button 
+                          type="submit" 
+                          className="flex-1"
+                          disabled={!selectedZaehler || !zaehlerstand || !ablesedatum}
+                        >
+                          Zählerstand übermitteln
+                        </Button>
+                      </div>
+                    </form>
+                  </>
+                ) : (
+                  <div className="py-8">
+                    <div className="text-center">
+                      <div className="mx-auto w-16 h-16 bg-status-success/10 rounded-full flex items-center justify-center mb-4">
+                        <Check className="w-8 h-8 text-status-success" />
+                      </div>
+                      <DialogTitle className="text-2xl mb-2">Erfolgreich übermittelt</DialogTitle>
+                      <DialogDescription className="mb-6">
+                        Ihre Referenznummer: ZS-2025-{Math.floor(Math.random() * 900000 + 100000)}
+                      </DialogDescription>
+                      <p className="text-sm text-muted-foreground mb-6">
+                        Ihr Zählerstand wurde erfolgreich gespeichert und wird in Ihrer nächsten Abrechnung berücksichtigt.
+                      </p>
+                      <Button onClick={handleZaehlerstandDialogClose} className="w-full">
+                        Schließen
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
+            
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="gap-2">
+                  <Headphones className="w-4 h-4" />
+                  Serviceanfrage stellen
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>Serviceanfrage stellen</DialogTitle>
+                  <DialogDescription>
+                    Stellen Sie eine Serviceanfrage zu einem Ihrer Anschlüsse oder Verträge
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="anschluss">Anschluss / Zählernummer</Label>
+                    <Select value={selectedAnschluss} onValueChange={setSelectedAnschluss}>
+                      <SelectTrigger id="anschluss">
+                        <SelectValue placeholder="Anschluss auswählen" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {anschluesse.map((anschluss) => (
+                          <SelectItem key={anschluss.id} value={anschluss.zaehlerNummer}>
+                            {anschluss.typ} - {anschluss.zaehlerNummer}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="serviceart">Art der Serviceanfrage</Label>
+                    <Select value={selectedServiceArt} onValueChange={setSelectedServiceArt}>
+                      <SelectTrigger id="serviceart">
+                        <SelectValue placeholder="Serviceart auswählen" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {serviceAnfragen.map((service) => (
+                          <SelectItem key={service.value} value={service.value}>
+                            {service.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="beschreibung">Beschreibung / Anliegen</Label>
+                    <Textarea
+                      id="beschreibung"
+                      placeholder="Beschreiben Sie hier Ihr Anliegen..."
+                      value={beschreibung}
+                      onChange={(e) => setBeschreibung(e.target.value)}
+                      rows={5}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="flex justify-end gap-3">
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  Abbrechen
-                </Button>
-                <Button onClick={handleSubmit} disabled={!selectedAnschluss || !selectedServiceArt || !beschreibung}>
-                  Anfrage absenden
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+                <div className="flex justify-end gap-3">
+                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    Abbrechen
+                  </Button>
+                  <Button onClick={handleSubmit} disabled={!selectedAnschluss || !selectedServiceArt || !beschreibung}>
+                    Anfrage absenden
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
         <div className="space-y-6">
