@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
@@ -18,190 +19,133 @@ import {
   MessageSquare
 } from "lucide-react";
 
-// Dummy-Daten für verschiedene Kategorien
-const notificationsData = {
-  todo: [
-    {
-      id: 1,
-      title: "Zählerstand melden",
-      description: "Bitte teilen Sie uns Ihren Zählerstand bis zum 31.12.2025 mit.",
-      deadline: "31.12.2025",
-      daysLeft: 20,
-      priority: "high",
-      action: { label: "Jetzt melden", link: "/zaehlerstand" }
-    },
-    {
-      id: 2,
-      title: "Vertrag digital unterschreiben",
-      description: "Ihr Netzanschlussvertrag wartet auf Ihre digitale Unterschrift.",
-      deadline: "15.01.2026",
-      daysLeft: 35,
-      priority: "medium",
-      action: { label: "Unterschreiben", link: "/meine-anschluesse" }
-    },
-    {
-      id: 3,
-      title: "Dokumente für Antrag nachreichen",
-      description: "Für Ihren Antrag PV-Anlage fehlen noch Lageplan und Gebäudeplan.",
-      deadline: "20.12.2025",
-      daysLeft: 9,
-      priority: "high",
-      action: { label: "Dokumente hochladen", link: "/antraege" }
-    }
-  ],
-  antraege: [
-    {
-      id: 10,
-      title: "PV-Anlage Antrag genehmigt",
-      description: "Ihr Antrag für die PV-Anlage (8,5 kWp) wurde genehmigt. Sie können nun mit der Installation beginnen.",
-      date: "08.12.2025",
-      time: "14:30",
-      type: "success",
-      read: false
-    },
-    {
-      id: 11,
-      title: "Netzprüfung in Bearbeitung",
-      description: "Die Netzverträglichkeitsprüfung für Ihre Wallbox läuft. Ergebnis in ca. 5-7 Werktagen.",
-      date: "05.12.2025",
-      time: "09:15",
-      type: "info",
-      read: true
-    }
-  ],
-  termine: [
-    {
-      id: 20,
-      title: "Terminvorschlag: Inbetriebnahme PV-Anlage",
-      description: "Installateur Müller GmbH schlägt Montag, 22.01.2025, 10:00-12:00 Uhr vor.",
-      date: "10.12.2025",
-      time: "16:45",
-      type: "action",
-      read: false,
-      actions: [
-        { label: "Zusagen", variant: "default" },
-        { label: "Absagen", variant: "outline" }
-      ]
-    },
-    {
-      id: 21,
-      title: "Termin bestätigt: Zählerwechsel",
-      description: "Ihr Termin am 18.12.2025 um 14:00 Uhr wurde bestätigt.",
-      date: "09.12.2025",
-      time: "11:20",
-      type: "success",
-      read: true
-    }
-  ],
-  rechnungen: [
-    {
-      id: 30,
-      title: "Neue Rechnung verfügbar",
-      description: "Ihre Rechnung für November 2025 (89,40 €) steht zum Download bereit.",
-      date: "01.12.2025",
-      time: "08:00",
-      type: "info",
-      read: false,
-      action: { label: "Rechnung ansehen", link: "#" }
-    },
-    {
-      id: 31,
-      title: "Zahlung eingegangen",
-      description: "Vielen Dank! Ihre Zahlung über 89,40 € wurde verbucht.",
-      date: "28.11.2025",
-      time: "10:15",
-      type: "success",
-      read: true
-    }
-  ],
-  anlagen: [
-    {
-      id: 40,
-      title: "Geplante Netzwartung in Ihrem Gebiet",
-      description: "Kurzzeitige Stromunterbrechung am 25.01.2025 zwischen 09:00-12:00 Uhr.",
-      date: "02.12.2025",
-      time: "14:30",
-      type: "warning",
-      read: false
-    },
-    {
-      id: 41,
-      title: "PV-Anlage: Unterdurchschnittliche Leistung",
-      description: "Ihre PV-Anlage hat in den letzten 7 Tagen 15% unter dem Durchschnitt produziert.",
-      date: "30.11.2025",
-      time: "08:15",
-      type: "warning",
-      read: true
-    }
-  ],
-  news: [
-    {
-      id: 50,
-      title: "Neue Förderprogramme für Wärmepumpen",
-      description: "Ab 2025 gelten neue, attraktive Förderkonditionen für Wärmepumpen-Installation.",
-      date: "05.12.2025",
-      time: "10:00",
-      type: "info",
-      read: false
-    },
-    {
-      id: 51,
-      title: "Neue Tarifoptionen verfügbar",
-      description: "Entdecken Sie unsere neuen Stromtarife für PV-Anlagenbesitzer mit bis zu 15% Ersparnis.",
-      date: "20.11.2025",
-      time: "15:00",
-      type: "info",
-      read: true
-    }
-  ],
-  postausgang: [
-    {
-      id: 60,
-      title: "Serviceanfrage: MaStR Registrierung",
-      description: "Anfrage zur MaStR Registrierung für PV-Anlage (Zähler: 5555666677) gesendet.",
-      date: "11.12.2025",
-      time: "09:15",
-      type: "service",
-      status: "Wartend",
-      recipient: "Kundenbetreuer"
-    },
-    {
-      id: 61,
-      title: "Terminanfrage: Beratung Direktvermarktung",
-      description: "Terminanfrage für Beratungsgespräch zu Direktvermarktungsoptionen gestellt.",
-      date: "10.12.2025",
-      time: "14:20",
-      type: "appointment",
-      status: "In Bearbeitung",
-      recipient: "Kundenbetreuer"
-    },
-    {
-      id: 62,
-      title: "Zählerstand gemeldet",
-      description: "Zählerstand für Hausanschluss (1234567890): 12.543 kWh übermittelt.",
-      date: "09.12.2025",
-      time: "16:45",
-      type: "meterreading",
-      status: "Bestätigt",
-      recipient: "Messstellenbetreiber"
-    },
-    {
-      id: 63,
-      title: "Serviceanfrage: Rechnungskorrektur",
-      description: "Anfrage zur Korrektur der Rechnung vom November 2025 gesendet.",
-      date: "05.12.2025",
-      time: "11:30",
-      type: "service",
-      status: "Beantwortet",
-      recipient: "Buchhaltung"
-    }
-  ]
+// Rollenbasierte Dummy-Benachrichtigungen
+export const notificationsByRole = {
+  kunde: {
+    todo: [
+      {
+        id: 1,
+        title: "Zählerstand melden",
+        description: "Bitte teilen Sie uns Ihren Zählerstand bis zum 31.12.2025 mit.",
+        deadline: "31.12.2025",
+        daysLeft: 20,
+        priority: "high",
+        action: { label: "Jetzt melden", link: "/zaehlerstand" }
+      },
+      {
+        id: 2,
+        title: "Vertrag digital unterschreiben",
+        description: "Ihr Netzanschlussvertrag wartet auf Ihre digitale Unterschrift.",
+        deadline: "15.01.2026",
+        daysLeft: 35,
+        priority: "medium",
+        action: { label: "Unterschreiben", link: "/meine-anschluesse" }
+      },
+      {
+        id: 3,
+        title: "Dokumente für Antrag nachreichen",
+        description: "Für Ihren Antrag PV-Anlage fehlen noch Lageplan und Gebäudeplan.",
+        deadline: "20.12.2025",
+        daysLeft: 9,
+        priority: "high",
+        action: { label: "Dokumente hochladen", link: "/antraege" }
+      }
+    ],
+    antraege: [
+      // ...bestehende Einträge für Kunde...
+    ],
+    termine: [
+      // ...bestehende Einträge für Kunde...
+    ],
+    rechnungen: [
+      // ...bestehende Einträge für Kunde...
+    ],
+    anlagen: [
+      // ...bestehende Einträge für Kunde...
+    ],
+    news: [
+      // ...bestehende Einträge für Kunde...
+    ],
+    postausgang: [
+      // ...bestehende Einträge für Kunde...
+    ],
+  },
+  installateur: {
+    todo: [
+      {
+        id: 101,
+        title: "Inbetriebnahme melden",
+        description: "Bitte melden Sie die Inbetriebnahme der PV-Anlage (Kunde: Familie Sommer, Standort: Musterstraße 12) bis zum 20.12.2025.",
+        deadline: "20.12.2025",
+        daysLeft: 8,
+        priority: "high",
+        action: { label: "Jetzt melden", link: "/antraege/installateur" }
+      },
+      {
+        id: 102,
+        title: "Informationen zu Antrag nachreichen",
+        description: "Bitte ergänzen Sie die technischen Daten zur Wallbox im Antrag von Herrn Winter (Standort: Hauptstraße 5).",
+        deadline: "18.12.2025",
+        daysLeft: 6,
+        priority: "medium",
+        action: { label: "Jetzt nachreichen", link: "/antraege/installateur" }
+      },
+      {
+        id: 103,
+        title: "Terminvorschlag für Inbetriebnahme erhalten",
+        description: "Kunde Familie Herbst schlägt den 22.12.2025, 10:00 Uhr für die Inbetriebnahme vor.",
+        deadline: "22.12.2025",
+        daysLeft: 10,
+        priority: "low",
+        action: { label: "Termin bestätigen", link: "/termine" }
+      }
+    ],
+    antraege: [
+      // ...spezifische Einträge für Installateur...
+    ],
+    termine: [
+      // ...spezifische Einträge für Installateur...
+    ],
+    rechnungen: [],
+    anlagen: [],
+    news: [],
+    postausgang: [],
+  },
+  kundenbetreuer: {
+    todo: [
+      {
+        id: 201,
+        title: "Antrag prüfen",
+        description: "Bitte prüfen Sie den neuen Antrag von Familie Sommer (PV-Anlage, 8,5 kWp).",
+        deadline: "16.12.2025",
+        daysLeft: 4,
+        priority: "high",
+        action: { label: "Antrag prüfen", link: "/antraege" }
+      }
+    ],
+    antraege: [
+      // ...spezifische Einträge für Kundenbetreuer...
+    ],
+    termine: [
+      // ...spezifische Einträge für Kundenbetreuer...
+    ],
+    rechnungen: [],
+    anlagen: [],
+    news: [],
+    postausgang: [],
+  },
 };
 
 const NachrichtenNew = () => {
+  const { activeRole } = useAuth();
   const [activeTab, setActiveTab] = useState("todo");
   const [eingangFilter, setEingangFilter] = useState("alle");
-  const [notifications, setNotifications] = useState(notificationsData);
+  const [notifications, setNotifications] = useState(notificationsByRole[activeRole]);
+
+  // Wenn sich die Rolle ändert, Benachrichtigungen neu laden
+  useEffect(() => {
+    setNotifications(notificationsByRole[activeRole]);
+  }, [activeRole]);
 
   const getTypeColor = (type: string) => {
     switch (type) {

@@ -20,16 +20,31 @@ import {
 type AppRole = "kunde" | "installateur" | "kundenbetreuer";
 
 const navigationItems = [
-  { to: "/", icon: LayoutDashboard, label: "Dashboard", end: true, roles: ["kunde", "installateur", "kundenbetreuer"] as AppRole[] },
-  { to: "/nachrichten", icon: Bell, label: "Meine Benachrichtigungen", roles: ["kunde", "installateur", "kundenbetreuer"] as AppRole[] },
-  { to: "/termine", icon: Calendar, label: "Meine Termine", roles: ["kunde", "installateur", "kundenbetreuer"] as AppRole[] },
-  { to: "/verbrauch", icon: TrendingUp, label: "Mein Verbrauch und Einspeisung", roles: ["kunde"] as AppRole[] },
-  { to: "/meine-anschluesse", icon: Zap, label: "Meine Anschlüsse & Verträge", roles: ["kunde"] as AppRole[] },
-  { to: "/antraege", icon: FileText, label: "Anträge stellen", roles: ["kunde", "kundenbetreuer"] as AppRole[] },
-  { to: "/antraege/installateur", icon: FileText, label: "Installateur-Anträge", roles: ["installateur"] as AppRole[] },
-  { to: "/netzkarte", icon: Info, label: "Infos zum Netz", roles: ["kunde"] as AppRole[] },
-  { to: "/netzplanung", icon: Network, label: "Netzplanung", roles: ["kundenbetreuer"] as AppRole[] },
-  { to: "/rechtliches", icon: Scale, label: "Rechtliches", roles: ["kunde"] as AppRole[] },
+  // Installateur-Navigation
+  { to: "/", icon: LayoutDashboard, label: "Dashboard", tooltip: "Dashboard", end: true, roles: ["installateur"] as AppRole[] },
+  { to: "/antraege/installateur", icon: FileText, label: "Meine Projekte", tooltip: "Meine Projekte (Anträge)", roles: ["installateur"] as AppRole[] },
+  { to: "/nachrichten", icon: Bell, label: "Benachrichtigungen", tooltip: "Benachrichtigungen", roles: ["installateur"] as AppRole[] },
+  { to: "/termine", icon: Calendar, label: "Termine", tooltip: "Termine", roles: ["installateur"] as AppRole[] },
+  { to: "/antraege", icon: FileText, label: "Anträge stellen", tooltip: "Anträge stellen", roles: ["installateur"] as AppRole[] },
+
+  // Kunde
+  { to: "/", icon: LayoutDashboard, label: "Dashboard", tooltip: "Dashboard", end: true, roles: ["kunde"] as AppRole[] },
+  { to: "/meine-anschluesse", icon: Zap, label: "Anschlüsse & Verträge", tooltip: "Meine Anschlüsse und Verträge", roles: ["kunde"] as AppRole[] },
+  { to: "/nachrichten", icon: Bell, label: "Benachrichtigungen", tooltip: "Meine Benachrichtigungen", roles: ["kunde"] as AppRole[] },
+  { to: "/termine", icon: Calendar, label: "Termine", tooltip: "Meine Termine", roles: ["kunde"] as AppRole[] },
+  { to: "/verbrauch", icon: TrendingUp, label: "Verbrauch", tooltip: "Mein Verbrauch", roles: ["kunde"] as AppRole[] },
+  { to: "/antraege", icon: FileText, label: "Anträge", tooltip: "Meine Anträge", roles: ["kunde"] as AppRole[] },
+  { to: "/netzkarte", icon: Info, label: "Mein Netz", tooltip: "Mein Netz", roles: ["kunde"] as AppRole[] },
+  { to: "/meine-daten", icon: User, label: "Meine Daten", tooltip: "Meine Daten", roles: ["kunde"] as AppRole[] },
+  { to: "/meine-daten", icon: User, label: "Meine Daten", tooltip: "Meine Daten", roles: ["installateur"] as AppRole[] },
+  { to: "/rechtliches", icon: Scale, label: "Rechtliches", tooltip: "Rechtliches", roles: ["kunde"] as AppRole[] },
+
+  // Kundenbetreuer (unverändert)
+  { to: "/", icon: LayoutDashboard, label: "Dashboard", tooltip: "Dashboard", end: true, roles: ["kundenbetreuer"] as AppRole[] },
+  { to: "/nachrichten", icon: Bell, label: "Benachrichtigungen", tooltip: "Benachrichtigungen", roles: ["kundenbetreuer"] as AppRole[] },
+  { to: "/termine", icon: Calendar, label: "Termine", tooltip: "Termine", roles: ["kundenbetreuer"] as AppRole[] },
+  { to: "/antraege", icon: FileText, label: "Anträge", tooltip: "Anträge", roles: ["kundenbetreuer"] as AppRole[] },
+  { to: "/netzplanung", icon: Network, label: "Netzplanung", tooltip: "Netzplanung", roles: ["kundenbetreuer"] as AppRole[] },
 ];
 
 export function AppSidebar() {
@@ -71,7 +86,7 @@ export function AppSidebar() {
                   const active = isActive(item.to, item.end);
                   return (
                     <SidebarMenuItem key={item.to}>
-                      <SidebarMenuButton asChild isActive={active}>
+                      <SidebarMenuButton asChild isActive={active} tooltip={item.tooltip}>
                         <NavLink
                           to={item.to}
                           end={item.end}
@@ -79,7 +94,7 @@ export function AppSidebar() {
                           activeClassName="bg-primary-light text-primary font-medium"
                         >
                           <item.icon className="w-5 h-5 flex-shrink-0" />
-                          <span>{item.label}</span>
+                          <span className="truncate max-w-[160px]">{item.label}</span>
                         </NavLink>
                       </SidebarMenuButton>
                     </SidebarMenuItem>

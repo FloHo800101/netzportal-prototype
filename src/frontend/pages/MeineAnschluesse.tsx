@@ -9,129 +9,105 @@ import { Textarea } from "../components/ui/textarea";
 import { Input } from "../components/ui/input";
 import { useState } from "react";
 
-const anschluesse = [
-  {
-    id: 1,
-    typ: "Hausanschluss",
-    icon: Home,
-    zaehlerNummer: "1234567890",
-    anschlussnummer: "HA-2024-001",
-    adresse: "Musterstraße 123, 12345 Musterstadt",
-    leistung: "35 kW",
-    netzebene: "Niederspannung",
-    inbetriebnahme: "15.03.2020",
-    status: "Aktiv",
-    vertraege: [
-      {
-        vertragsNummer: "V-HA-2024-001",
-        typ: "Netzanschlussvertrag",
-        beginn: "15.03.2020",
-        ende: "unbefristet",
-        dokument: "netzanschlussvertrag_hausanschluss.pdf"
-      }
-    ]
-  },
-  {
-    id: 2,
-    typ: "Wärmepumpe",
-    icon: Thermometer,
-    zaehlerNummer: "9876543210",
-    anschlussnummer: "WP-2024-042",
-    adresse: "Musterstraße 123, 12345 Musterstadt",
-    leistung: "12 kW",
-    netzebene: "Niederspannung",
-    inbetriebnahme: "10.08.2023",
-    status: "Aktiv",
-    vertraege: [
-      {
-        vertragsNummer: "V-WP-2024-042",
-        typ: "Netzanschlussvertrag Wärmepumpe",
-        beginn: "10.08.2023",
-        ende: "unbefristet",
-        dokument: "netzanschlussvertrag_waermepumpe.pdf"
-      },
-      {
-        vertragsNummer: "V-WP-TARIF-2024",
-        typ: "Sondertarif Wärmepumpe",
-        beginn: "10.08.2023",
-        ende: "31.12.2025",
-        dokument: "sondertarif_waermepumpe.pdf"
-      }
-    ]
-  },
-  {
-    id: 3,
-    typ: "PV-Anlage",
-    icon: Sun,
-    zaehlerNummer: "5555666677",
-    anschlussnummer: "PV-2024-089",
-    adresse: "Musterstraße 123, 12345 Musterstadt",
-    leistung: "9.8 kWp",
-    netzebene: "Niederspannung",
-    inbetriebnahme: "22.04.2024",
-    status: "Aktiv",
-    vertraege: [
-      {
-        vertragsNummer: "V-PV-2024-089",
-        typ: "Netzanschlussvertrag PV-Anlage",
-        beginn: "22.04.2024",
-        ende: "unbefristet",
-        dokument: "netzanschlussvertrag_pv.pdf"
-      },
-      {
-        vertragsNummer: "V-PV-EEG-2024",
-        typ: "EEG-Einspeisevertrag",
-        beginn: "22.04.2024",
-        ende: "21.04.2044",
-        dokument: "eeg_einspeisevertrag.pdf"
-      }
-    ]
-  }
-];
-
-const serviceAnfragen = [
-  { value: "steuerliche-behandlung", label: "Steuerliche Behandlung" },
-  { value: "mastr-registrierung", label: "MaStR Registrierung" },
-  { value: "betreiberwechsel", label: "Betreiberwechsel" },
-  { value: "rechnungskorrektur", label: "Rechnungskorrektur" },
-  { value: "direktvermarktung", label: "Direktvermarktung" }
-];
-
 const MeineAnschluesse = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isZaehlerstandDialogOpen, setIsZaehlerstandDialogOpen] = useState(false);
-  const [selectedAnschluss, setSelectedAnschluss] = useState("");
-  const [selectedServiceArt, setSelectedServiceArt] = useState("");
-  const [beschreibung, setBeschreibung] = useState("");
-  const [zaehlerstandSubmitted, setZaehlerstandSubmitted] = useState(false);
-  
-  // Zählerstand Form States
-  const [selectedZaehler, setSelectedZaehler] = useState("");
-  const [zaehlerstand, setZaehlerstand] = useState("");
-  const [ablesedatum, setAblesedatum] = useState("");
+        // Handler für das Absenden der Serviceanfrage
+        const handleSubmit = (e: React.FormEvent) => {
+          e.preventDefault();
+          // Hier könnte ein API-Call erfolgen
+          setIsDialogOpen(false);
+          setSelectedAnschluss("");
+          setSelectedServiceArt("");
+          setBeschreibung("");
+          // Optional: Feedback/Toast anzeigen
+        };
+      // Handler für das Absenden des Zählerstand-Dialogs
+      const handleZaehlerstandSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        // Hier könnte ein API-Call erfolgen
+        setZaehlerstandSubmitted(true);
+      };
+    // State für Dialoge und Formulare
+    const [isZaehlerstandDialogOpen, setIsZaehlerstandDialogOpen] = useState(false);
+    const [zaehlerstandSubmitted, setZaehlerstandSubmitted] = useState(false);
+    const [selectedZaehler, setSelectedZaehler] = useState("");
+    const [zaehlerstand, setZaehlerstand] = useState("");
+    const [ablesedatum, setAblesedatum] = useState("");
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedAnschluss, setSelectedAnschluss] = useState("");
+    const [selectedServiceArt, setSelectedServiceArt] = useState("");
+    const [beschreibung, setBeschreibung] = useState("");
+  const anschluesse = [
+    {
+      id: 1,
+      typ: "Hausanschluss",
+      icon: Home,
+      zaehlerNummer: "1234567890",
+      anschlussnummer: "HA-2024-001",
+      adresse: "Musterstraße 123, 12345 Musterstadt",
+      leistung: "35 kW",
+      netzebene: "Niederspannung",
+      inbetriebnahme: "15.03.2020",
+      status: "Aktiv",
+      vertraege: [
+        {
+          vertragsNummer: "V-HA-2024-001",
+          typ: "Netzanschlussvertrag",
+          beginn: "15.03.2020",
+          ende: "unbefristet",
+          dokument: "netzanschlussvertrag_hausanschluss.pdf"
+        }
+      ]
+    },
+    {
+      id: 2,
+      typ: "Wärmepumpenanschluss",
+      icon: Thermometer,
+      zaehlerNummer: "WP-2025-001",
+      anschlussnummer: "WP-2025-001",
+      adresse: "Musterstraße 123, 12345 Musterstadt",
+      leistung: "12 kW",
+      netzebene: "Niederspannung",
+      inbetriebnahme: "01.09.2023",
+      status: "Aktiv",
+      vertraege: [
+        {
+          vertragsNummer: "V-WP-2025-001",
+          typ: "Wärmepumpen-Sondervertrag",
+          beginn: "01.09.2023",
+          ende: "unbefristet",
+          dokument: "waermepumpe_vertrag.pdf"
+        }
+      ]
+    },
+    {
+      id: 3,
+      typ: "PV-Anlage (Einspeiser)",
+      icon: Sun,
+      zaehlerNummer: "PV-2025-001",
+      anschlussnummer: "PV-2025-001",
+      adresse: "Musterstraße 123, 12345 Musterstadt",
+      leistung: "8 kWp",
+      netzebene: "Niederspannung",
+      inbetriebnahme: "10.06.2022",
+      status: "Aktiv",
+      vertraege: [
+        {
+          vertragsNummer: "V-PV-2025-001",
+          typ: "Einspeisevertrag",
+          beginn: "10.06.2022",
+          ende: "09.06.2042",
+          dokument: "einspeisevertrag_pv.pdf"
+        }
+      ],
+      gutschriften: [
+        { monat: "November 2025", betrag: "112,34 €" },
+        { monat: "Oktober 2025", betrag: "98,76 €" },
+        { monat: "September 2025", betrag: "105,67 €" }
+      ]
+    }
+  ];
 
-  const handleSubmit = () => {
-    // Hier würde die Serviceanfrage abgeschickt werden
-    console.log({
-      anschluss: selectedAnschluss,
-      serviceArt: selectedServiceArt,
-      beschreibung: beschreibung
-    });
-    setIsDialogOpen(false);
-    setSelectedAnschluss("");
-    setSelectedServiceArt("");
-    setBeschreibung("");
-  };
-
-  const handleZaehlerstandSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log({
-      zaehler: selectedZaehler,
-      zaehlerstand: zaehlerstand,
-      datum: ablesedatum
-    });
-    setZaehlerstandSubmitted(true);
-  };
+  // ...hier müssen alle useState-Hooks und Handler deklariert werden, falls sie fehlen...
 
   const handleZaehlerstandDialogClose = () => {
     setIsZaehlerstandDialogOpen(false);
@@ -286,32 +262,126 @@ const MeineAnschluesse = () => {
                     </Select>
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="serviceart">Art der Serviceanfrage</Label>
-                    <Select value={selectedServiceArt} onValueChange={setSelectedServiceArt}>
-                      <SelectTrigger id="serviceart">
-                        <SelectValue placeholder="Serviceart auswählen" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {serviceAnfragen.map((service) => (
-                          <SelectItem key={service.value} value={service.value}>
-                            {service.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {/* Vertragsauswahl für relevante Servicearten */}
+                  {(["stammdaten","betriebsweise","steuerliche-behandlung"].includes(selectedServiceArt)) && (
+                    <div className="space-y-2">
+                      <Label>Vertrag auswählen</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Vertrag auswählen" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {anschluesse
+                            .find((a) => a.zaehlerNummer === selectedAnschluss)?.vertraege?.map((v, idx) => (
+                              <SelectItem key={idx} value={v.vertragsNummer}>{v.typ} ({v.vertragsNummer})</SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
 
-                  <div className="space-y-2">
-                    <Label htmlFor="beschreibung">Beschreibung / Anliegen</Label>
-                    <Textarea
-                      id="beschreibung"
-                      placeholder="Beschreiben Sie hier Ihr Anliegen..."
-                      value={beschreibung}
-                      onChange={(e) => setBeschreibung(e.target.value)}
-                      rows={5}
-                    />
-                  </div>
+                  {/* Stammdatenänderung */}
+                  {selectedServiceArt === "stammdaten" && (
+                    <div className="space-y-2">
+                      <Label>Straße</Label>
+                      <Input defaultValue="Musterstraße 123" />
+                      <Label>PLZ</Label>
+                      <Input defaultValue="12345" />
+                      <Label>Ort</Label>
+                      <Input defaultValue="Musterstadt" />
+                      <Label>Bankverbindung</Label>
+                      <Input defaultValue="DE12 3456 7890 1234 5678 00" />
+                      <Label>Beschreibung / Anliegen</Label>
+                      <Textarea placeholder="Beschreiben Sie hier Ihr Anliegen..." />
+                    </div>
+                  )}
+
+                  {/* Betriebsweise ändern */}
+                  {selectedServiceArt === "betriebsweise" && (
+                    <div className="space-y-2">
+                      <Label>Aktuelle Betriebsweise</Label>
+                      <Input defaultValue="Volleinspeisung" disabled />
+                      <Label>Neue Betriebsweise</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Neue Betriebsweise wählen" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="volleinspeisung">Volleinspeisung</SelectItem>
+                          <SelectItem value="eigenverbrauch">Eigenverbrauch</SelectItem>
+                          <SelectItem value="kombi">Kombination</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Label>Beschreibung / Anliegen</Label>
+                      <Textarea placeholder="Beschreiben Sie hier Ihr Anliegen..." />
+                    </div>
+                  )}
+
+                  {/* Betreiberwechsel */}
+                  {selectedServiceArt === "betreiberwechsel" && (
+                    <div className="space-y-2">
+                      <Label>Aktueller Betreiber</Label>
+                      <Input placeholder="Name aktueller Betreiber" defaultValue="Max Mustermann" />
+                      <Label>Neuer Betreiber</Label>
+                      <Input placeholder="Name neuer Betreiber" />
+                      <Label>Beschreibung / Anliegen</Label>
+                      <Textarea placeholder="Beschreiben Sie hier Ihr Anliegen..." />
+                    </div>
+                  )}
+
+                  {/* Stilllegung/Modultausch */}
+                  {selectedServiceArt === "stilllegung" && (
+                    <div className="space-y-2">
+                      <Label>Stilllegung/Modultausch</Label>
+                      <Button asChild variant="link">
+                        <a href="/antrag/neue-anlage?art=stilllegung" target="_blank" rel="noopener noreferrer">
+                          Zur Antragsstrecke "Anlagenrückbau"
+                        </a>
+                      </Button>
+                      <Textarea placeholder="Fragen zur Stilllegung oder Modultausch..." />
+                    </div>
+                  )}
+
+                  {/* Steuerliche Behandlung */}
+                  {selectedServiceArt === "steuerliche-behandlung" && (
+                    <div className="space-y-2">
+                      <Label>Beschreibung / Anliegen</Label>
+                      <Textarea placeholder="Ihr Anliegen zur steuerlichen Behandlung..." />
+                    </div>
+                  )}
+
+                  {/* Rechnungskorrektur */}
+                  {selectedServiceArt === "rechnungskorrektur" && (
+                    <div className="space-y-2">
+                      <Label>Rechnung auswählen</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Rechnung auswählen" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {/* Beispieldaten */}
+                          <SelectItem value="R-HA-2023-001">Hausanschlussrechnung (R-HA-2023-001) - 2.450,00 €</SelectItem>
+                          <SelectItem value="R-PV-2025-002">PV-Gutschrift Dezember (R-PV-2025-002) - 105,67 €</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Label>Beschreibung / Anliegen</Label>
+                      <Textarea placeholder="Fragen zur Rechnung..." />
+                    </div>
+                  )}
+
+                  {/* Standard-Beschreibung für alle anderen */}
+                  {["stammdaten","betriebsweise","betreiberwechsel","stilllegung","steuerliche-behandlung","rechnungskorrektur"].includes(selectedServiceArt) ? null : (
+                    <div className="space-y-2">
+                      <Label htmlFor="beschreibung">Beschreibung / Anliegen</Label>
+                      <Textarea
+                        id="beschreibung"
+                        placeholder="Beschreiben Sie hier Ihr Anliegen..."
+                        value={beschreibung}
+                        onChange={(e) => setBeschreibung(e.target.value)}
+                        rows={5}
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="flex justify-end gap-3">
                   <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -409,6 +479,65 @@ const MeineAnschluesse = () => {
                       ))}
                     </div>
                   </div>
+
+                  {/* Rechnungen für Hausanschluss */}
+                  {anschluss.rechnungen && anschluss.rechnungen.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold mb-3 flex items-center gap-2">
+                        <Receipt className="w-4 h-4" />
+                        Rechnungen ({anschluss.rechnungen.length})
+                      </h3>
+                      <div className="space-y-3">
+                        {anschluss.rechnungen.map((rechnung, idx) => (
+                          <div key={idx} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="font-medium">{rechnung.typ}</p>
+                                <Badge variant="outline" className="text-xs">
+                                  {rechnung.rechnungsNummer}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                Datum: {rechnung.datum} • Betrag: {rechnung.betrag}
+                              </p>
+                            </div>
+                            <Button variant="outline" size="sm" className="gap-2">
+                              <Download className="w-4 h-4" />
+                              PDF
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Gutschriften für PV-Anlage */}
+                  {anschluss.gutschriften && anschluss.gutschriften.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold mb-3 flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4 text-status-success" />
+                        Gutschriften der letzten 3 Monate
+                      </h3>
+                      <div className="space-y-3">
+                        {anschluss.gutschriften.map((g, idx) => (
+                          <div key={idx} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="font-medium">{g.monat}</p>
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                Betrag: <span className="font-medium text-status-success">{g.betrag}</span>
+                              </p>
+                            </div>
+                            <Button variant="outline" size="sm" className="gap-2">
+                              <Download className="w-4 h-4" />
+                              PDF
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             );

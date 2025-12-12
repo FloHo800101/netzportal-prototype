@@ -11,7 +11,7 @@ const MeineDaten = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">Meine Daten</h1>
-          <p className="text-muted-foreground">Verwalten Sie Ihre persönlichen Informationen</p>
+          <p className="text-muted-foreground mb-4">Installateur: <span className="font-semibold">Andreas Anlagenbau GmbH</span></p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

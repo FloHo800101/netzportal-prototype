@@ -17,18 +17,18 @@ import ScenarioSimulator from "../components/ScenarioSimulator";
 import { Button } from "../components/ui/button";
 
 const monthlyData = [
-  { month: "Feb", hausstrom: 110, wallbox: 42, waermepumpe: 90, einspeisung: 0, temp: 3 },
-  { month: "Mär", hausstrom: 115, wallbox: 46, waermepumpe: 95, einspeisung: 10, temp: 6 },
-  { month: "Apr", hausstrom: 120, wallbox: 50, waermepumpe: 85, einspeisung: 20, temp: 10 },
-  { month: "Mai", hausstrom: 130, wallbox: 56, waermepumpe: 75, einspeisung: 40, temp: 14 },
-  { month: "Jun", hausstrom: 140, wallbox: 60, waermepumpe: 70, einspeisung: 60, temp: 17 },
-  { month: "Jul", hausstrom: 120, wallbox: 60, waermepumpe: 65, einspeisung: 0, temp: 18 },
-  { month: "Aug", hausstrom: 110, wallbox: 58, waermepumpe: 70, einspeisung: 0, temp: 19 },
-  { month: "Sep", hausstrom: 130, wallbox: 50, waermepumpe: 87, einspeisung: 0, temp: 16 },
-  { month: "Okt", hausstrom: 145, wallbox: 60, waermepumpe: 84, einspeisung: 0, temp: 11 },
-  { month: "Nov", hausstrom: 160, wallbox: 72, waermepumpe: 80, einspeisung: 0, temp: 6 },
-  { month: "Dez", hausstrom: 170, wallbox: 78, waermepumpe: 86, einspeisung: 0, temp: 2 },
-  { month: "Jan", hausstrom: 120, wallbox: 48, waermepumpe: 130, einspeisung: 125, temp: 1 },
+  { month: "Jan", hausstrom: 120, wallbox: 48, waermepumpe: 130, einspeisung: 5, temp: 1, sun: 45 },
+  { month: "Feb", hausstrom: 110, wallbox: 42, waermepumpe: 120, einspeisung: 10, temp: 3, sun: 70 },
+  { month: "Mär", hausstrom: 115, wallbox: 46, waermepumpe: 100, einspeisung: 30, temp: 6, sun: 120 },
+  { month: "Apr", hausstrom: 120, wallbox: 50, waermepumpe: 85, einspeisung: 60, temp: 10, sun: 160 },
+  { month: "Mai", hausstrom: 130, wallbox: 56, waermepumpe: 75, einspeisung: 90, temp: 14, sun: 210 },
+  { month: "Jun", hausstrom: 140, wallbox: 60, waermepumpe: 70, einspeisung: 120, temp: 17, sun: 240 },
+  { month: "Jul", hausstrom: 120, wallbox: 60, waermepumpe: 65, einspeisung: 130, temp: 18, sun: 250 },
+  { month: "Aug", hausstrom: 110, wallbox: 58, waermepumpe: 70, einspeisung: 120, temp: 19, sun: 220 },
+  { month: "Sep", hausstrom: 130, wallbox: 50, waermepumpe: 87, einspeisung: 80, temp: 16, sun: 160 },
+  { month: "Okt", hausstrom: 145, wallbox: 60, waermepumpe: 84, einspeisung: 40, temp: 11, sun: 100 },
+  { month: "Nov", hausstrom: 160, wallbox: 72, waermepumpe: 80, einspeisung: 15, temp: 6, sun: 60 },
+  { month: "Dez", hausstrom: 170, wallbox: 78, waermepumpe: 86, einspeisung: 5, temp: 2, sun: 40 },
 ];
 
 // Generiere Tagesdaten für einen Monat basierend auf Monatswerten
@@ -307,6 +307,7 @@ const Verbrauch = () => {
                 )}
 
                 {showTemp && <Line type="monotone" dataKey="temp" name="Ø-Temperatur" stroke="hsl(var(--accent))" strokeWidth={2} yAxisId="right" />}
+                <Line type="monotone" dataKey="sun" name="Sonnenstunden" stroke="#fbbf24" strokeWidth={2} yAxisId="right" />
               </ComposedChart>
             </ResponsiveContainer>
           </CardContent>

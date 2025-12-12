@@ -65,61 +65,64 @@ const Antraege = () => {
             <p className="text-muted-foreground">Verwalten Sie Ihre Anträge und Anmeldungen</p>
           </div>
 
-          {/* Erzeugungsanlagen Sektion */}
-          <Card className="mb-6 border-dashed">
-            <CardHeader className="text-center">
-              <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                <Plus className="w-8 h-8 text-muted-foreground" />
-              </div>
-              <CardTitle>Erzeugungsanlagen</CardTitle>
-              <CardDescription>Anträge für Photovoltaik- und andere Erzeugungsanlagen</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Link to="/antrag/neue-anlage">
-                  <Button className="w-full h-auto py-4 flex flex-col gap-2">
-                    <Plus className="w-6 h-6" />
-                    <span>Neue Erzeugungsanlage anmelden</span>
+          {/* Beide Cards nebeneinander */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Erzeugungsanlagen Sektion */}
+            <Card className="border-dashed">
+              <CardHeader className="text-center">
+                <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                  <Plus className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <CardTitle>Erzeugungsanlagen</CardTitle>
+                <CardDescription>Anträge für Photovoltaik- und andere Erzeugungsanlagen</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 gap-4">
+                  <Link to="/antrag/neue-anlage">
+                    <Button className="w-full h-auto py-4 flex flex-col gap-2">
+                      <Plus className="w-6 h-6" />
+                      <span>Neue Erzeugungsanlage anmelden</span>
+                    </Button>
+                  </Link>
+                  <Button variant="outline" className="h-auto py-4 flex flex-col gap-2 opacity-60 cursor-not-allowed" disabled>
+                    <FileText className="w-6 h-6" />
+                    <span>Anlagenerweiterung</span>
                   </Button>
-                </Link>
-                <Button variant="outline" className="h-auto py-4 flex flex-col gap-2 opacity-60 cursor-not-allowed" disabled>
-                  <FileText className="w-6 h-6" />
-                  <span>Anlagenerweiterung</span>
-                </Button>
-                <Button variant="outline" className="h-auto py-4 flex flex-col gap-2 opacity-60 cursor-not-allowed" disabled>
-                  <FileText className="w-6 h-6" />
-                  <span>Anlagenrückbau</span>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                  <Button variant="outline" className="h-auto py-4 flex flex-col gap-2 opacity-60 cursor-not-allowed" disabled>
+                    <FileText className="w-6 h-6" />
+                    <span>Anlagenrückbau</span>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
 
-          {/* Weitere Antragsarten Sektion */}
-          <Card className="mb-8 border-dashed">
-            <CardHeader className="text-center">
-              <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                <Plus className="w-8 h-8 text-muted-foreground" />
-              </div>
-              <CardTitle>Weitere Antragsarten</CardTitle>
-              <CardDescription>Weitere Dienstleistungen und Anträge</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button variant="outline" className="h-auto py-4 flex flex-col gap-2">
-                  <FileText className="w-6 h-6" />
-                  <span>Hausanschluss</span>
-                </Button>
-                <Button variant="outline" className="h-auto py-4 flex flex-col gap-2">
-                  <FileText className="w-6 h-6" />
-                  <span>Leistungsänderung</span>
-                </Button>
-                <Button variant="outline" className="h-auto py-4 flex flex-col gap-2">
-                  <FileText className="w-6 h-6" />
-                  <span>Netzanschluss</span>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+            {/* Weitere Antragsarten Sektion */}
+            <Card className="border-dashed">
+              <CardHeader className="text-center">
+                <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                  <Plus className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <CardTitle>Weitere Antragsarten</CardTitle>
+                <CardDescription>Beantragen Sie Hausanschluss, Leistungsänderung oder Netzanschluss.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 gap-4">
+                  <Button variant="outline" className="h-auto py-4 flex flex-col gap-2">
+                    <FileText className="w-6 h-6" />
+                    <span>Hausanschluss</span>
+                  </Button>
+                  <Button variant="outline" className="h-auto py-4 flex flex-col gap-2">
+                    <FileText className="w-6 h-6" />
+                    <span>Leistungsänderung</span>
+                  </Button>
+                  <Button variant="outline" className="h-auto py-4 flex flex-col gap-2">
+                    <FileText className="w-6 h-6" />
+                    <span>Netzanschluss</span>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         <div className="space-y-6">
