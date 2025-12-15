@@ -10,6 +10,34 @@ import { Input } from "../components/ui/input";
 import { useState } from "react";
 
 const MeineAnschluesse = () => {
+          // State für Serviceanfrage-Dialog
+          const [isServiceDialogOpen, setIsServiceDialogOpen] = useState(false);
+          const [serviceSelectedAnschluss, setServiceSelectedAnschluss] = useState("");
+          const [serviceSelectedVertrag, setServiceSelectedVertrag] = useState("");
+          const [serviceSelectedArt, setServiceSelectedArt] = useState("");
+          const [serviceBeschreibung, setServiceBeschreibung] = useState("");
+
+          // Servicearten
+          const serviceArten = [
+            { value: "stammdaten", label: "Stammdatenänderung" },
+            { value: "betreiberwechsel", label: "Betreiberwechsel" },
+            { value: "betriebsweise", label: "Betriebsweise ändern" },
+            { value: "stilllegung", label: "Stilllegung/Modultausch" },
+            { value: "steuerliche-behandlung", label: "Steuerliche Behandlung" },
+            { value: "rechnungskorrektur", label: "Rechnungskorrektur" }
+          ];
+
+          // Handler für Serviceanfrage-Formular
+          const handleServiceSubmit = (e: React.FormEvent) => {
+            e.preventDefault();
+            // Hier könnte ein API-Call erfolgen
+            setIsServiceDialogOpen(false);
+            setServiceSelectedAnschluss("");
+            setServiceSelectedVertrag("");
+            setServiceSelectedArt("");
+            setServiceBeschreibung("");
+            // Optional: Feedback/Toast anzeigen
+          };
         // Handler für das Absenden der Serviceanfrage
         const handleSubmit = (e: React.FormEvent) => {
           e.preventDefault();
@@ -126,6 +154,178 @@ const MeineAnschluesse = () => {
             <p className="text-muted-foreground">Übersicht über Ihre Netzanschlüsse und Vertragsdetails</p>
           </div>
           <div className="flex gap-2">
+            {/* Neuer Serviceanfrage-Dialog mit dynamischen Feldern */}
+            <Dialog open={isServiceDialogOpen} onOpenChange={setIsServiceDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="gap-2">
+                  <Headphones className="w-4 h-4" />
+                  Serviceanfrage stellen
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>Serviceanfrage stellen</DialogTitle>
+                  <DialogDescription>
+                    Stellen Sie eine Serviceanfrage zu einem Ihrer Anschlüsse oder Verträge
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleServiceSubmit} className="space-y-4 py-4">
+                  {/* Anschlussauswahl */}
+                  <div className="space-y-2">
+                    <Label htmlFor="anschluss">Anschluss / Zählernummer</Label>
+                    <Select value={serviceSelectedAnschluss} onValueChange={setServiceSelectedAnschluss}>
+                      <SelectTrigger id="anschluss">
+                        <SelectValue placeholder="Anschluss auswählen" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {anschluesse.map((anschluss) => (
+                          <SelectItem key={anschluss.id} value={anschluss.zaehlerNummer}>
+                            {anschluss.typ} - {anschluss.zaehlerNummer}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Serviceart-Auswahl */}
+                  <div className="space-y-2">
+                    <Label htmlFor="serviceart">Serviceart</Label>
+                    <Select value={serviceSelectedArt} onValueChange={setServiceSelectedArt}>
+                      <SelectTrigger id="serviceart">
+                        <SelectValue placeholder="Serviceart auswählen" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {serviceArten.map((art) => (
+                          <SelectItem key={art.value} value={art.value}>{art.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Dynamische Felder je Serviceart */}
+                  {(["stammdaten","betriebsweise","steuerliche-behandlung"].includes(serviceSelectedArt)) && (
+                    <div className="space-y-2">
+                      <Label>Vertrag auswählen</Label>
+                      <Select value={serviceSelectedVertrag} onValueChange={setServiceSelectedVertrag}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Vertrag auswählen" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(anschluesse.find(a => a.zaehlerNummer === serviceSelectedAnschluss)?.vertraege || []).map((v, idx) => (
+                            <SelectItem key={idx} value={v.vertragsNummer}>{v.typ} ({v.vertragsNummer})</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {serviceSelectedArt === "stammdaten" && (
+                    <div className="space-y-2">
+                      <Label>Straße</Label>
+                      <Input defaultValue="Musterstraße 123" />
+                      <Label>PLZ</Label>
+                      <Input defaultValue="12345" />
+                      <Label>Ort</Label>
+                      <Input defaultValue="Musterstadt" />
+                      <Label>Bankverbindung</Label>
+                      <Input defaultValue="DE12 3456 7890 1234 5678 00" />
+                      <Label>Beschreibung / Anliegen</Label>
+                      <Textarea placeholder="Beschreiben Sie hier Ihr Anliegen..." value={serviceBeschreibung} onChange={e => setServiceBeschreibung(e.target.value)} />
+                    </div>
+                  )}
+
+                  {serviceSelectedArt === "betriebsweise" && (
+                    <div className="space-y-2">
+                      <Label>Aktuelle Betriebsweise</Label>
+                      <Input defaultValue="Volleinspeisung" disabled />
+                      <Label>Neue Betriebsweise</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Neue Betriebsweise wählen" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="volleinspeisung">Volleinspeisung</SelectItem>
+                          <SelectItem value="eigenverbrauch">Eigenverbrauch</SelectItem>
+                          <SelectItem value="kombi">Kombination</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Label>Beschreibung / Anliegen</Label>
+                      <Textarea placeholder="Beschreiben Sie hier Ihr Anliegen..." value={serviceBeschreibung} onChange={e => setServiceBeschreibung(e.target.value)} />
+                    </div>
+                  )}
+
+                  {serviceSelectedArt === "betreiberwechsel" && (
+                    <div className="space-y-2">
+                      <Label>Aktueller Betreiber</Label>
+                      <Input placeholder="Name aktueller Betreiber" defaultValue="Max Mustermann" />
+                      <Label>Neuer Betreiber</Label>
+                      <Input placeholder="Name neuer Betreiber" />
+                      <Label>Beschreibung / Anliegen</Label>
+                      <Textarea placeholder="Beschreiben Sie hier Ihr Anliegen..." value={serviceBeschreibung} onChange={e => setServiceBeschreibung(e.target.value)} />
+                    </div>
+                  )}
+
+                  {serviceSelectedArt === "stilllegung" && (
+                    <div className="space-y-2">
+                      <Label>Stilllegung/Modultausch</Label>
+                      <Button asChild variant="link">
+                        <a href="/antrag/neue-anlage?art=stilllegung" target="_blank" rel="noopener noreferrer">
+                          Zur Antragsstrecke "Anlagenrückbau"
+                        </a>
+                      </Button>
+                      <Textarea placeholder="Fragen zur Stilllegung oder Modultausch..." value={serviceBeschreibung} onChange={e => setServiceBeschreibung(e.target.value)} />
+                    </div>
+                  )}
+
+                  {serviceSelectedArt === "steuerliche-behandlung" && (
+                    <div className="space-y-2">
+                      <Label>Beschreibung / Anliegen</Label>
+                      <Textarea placeholder="Ihr Anliegen zur steuerlichen Behandlung..." value={serviceBeschreibung} onChange={e => setServiceBeschreibung(e.target.value)} />
+                    </div>
+                  )}
+
+                  {serviceSelectedArt === "rechnungskorrektur" && (
+                    <div className="space-y-2">
+                      <Label>Rechnung auswählen</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Rechnung auswählen" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {/* Beispieldaten */}
+                          <SelectItem value="R-HA-2023-001">Hausanschlussrechnung (R-HA-2023-001) - 2.450,00 €</SelectItem>
+                          <SelectItem value="R-PV-2025-002">PV-Gutschrift Dezember (R-PV-2025-002) - 105,67 €</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Label>Beschreibung / Anliegen</Label>
+                      <Textarea placeholder="Fragen zur Rechnung..." value={serviceBeschreibung} onChange={e => setServiceBeschreibung(e.target.value)} />
+                    </div>
+                  )}
+
+                  {/* Standard-Beschreibung für alle anderen */}
+                  {["stammdaten","betriebsweise","betreiberwechsel","stilllegung","steuerliche-behandlung","rechnungskorrektur"].includes(serviceSelectedArt) ? null : (
+                    <div className="space-y-2">
+                      <Label>Beschreibung / Anliegen</Label>
+                      <Textarea
+                        placeholder="Beschreiben Sie hier Ihr Anliegen..."
+                        value={serviceBeschreibung}
+                        onChange={e => setServiceBeschreibung(e.target.value)}
+                        rows={4}
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex justify-end gap-3">
+                    <Button variant="outline" type="button" onClick={() => setIsServiceDialogOpen(false)}>
+                      Abbrechen
+                    </Button>
+                    <Button type="submit" disabled={!serviceSelectedAnschluss || !serviceSelectedArt || !serviceBeschreibung}>
+                      Anfrage absenden
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
             <Dialog open={isZaehlerstandDialogOpen} onOpenChange={setIsZaehlerstandDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="gap-2">

@@ -130,13 +130,54 @@ const Verbrauch = () => {
     setDailyData([]);
   };
   return (
+
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Energieverbrauch</h1>
-          <p className="text-muted-foreground">Übersicht Ihres Energieverbrauchs und Ihrer Einspeisung</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Einspeisung</h1>
+          <p className="text-muted-foreground">Die Werte beziehen sich auf den Anschluss: <b>PV-Anlage (Einspeiser)</b></p>
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Einspeisung heute</CardTitle>
+              <Zap className="w-4 h-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">160 Wh</div>
+              <p className="text-xs text-muted-foreground mt-1">Aktueller Tag</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Einspeisung diesen Monat</CardTitle>
+              <Zap className="w-4 h-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">6,92 kWh</div>
+              <p className="text-xs text-muted-foreground mt-1">Monatssumme</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Einspeisung gesamt</CardTitle>
+              <Zap className="w-4 h-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">2,85 MWh</div>
+              <p className="text-xs text-muted-foreground mt-1">Seit Inbetriebnahme</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Verbrauchsbereich */}
+        <div className="mb-2">
+          <h2 className="text-xl font-bold text-foreground mb-2">Verbrauch</h2>
+          <p className="text-muted-foreground">Die Werte beziehen sich auf den Gesamtverbrauch aller Anschlüsse</p>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -144,36 +185,30 @@ const Verbrauch = () => {
               <Zap className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">14.2 kWh</div>
-              <p className="text-xs text-status-warning flex items-center gap-1 mt-1">
-                <TrendingUp className="w-3 h-3" />
-                +2.1% zum Vortag
-              </p>
+              <div className="text-2xl font-bold">14,2 kWh</div>
+              <p className="text-xs text-muted-foreground mt-1">Aktueller Tag</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Verbrauch letzter Monat</CardTitle>
+              <CardTitle className="text-sm font-medium">Verbrauch diesen Monat</CardTitle>
               <Zap className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">298 kWh</div>
-              <p className="text-xs text-status-success flex items-center gap-1 mt-1">
-                <TrendingDown className="w-3 h-3" />
-                -10.8% zum Vormonat
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">Monatssumme</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Einspeisung letzter Monat</CardTitle>
+              <CardTitle className="text-sm font-medium">Verbrauch gesamt</CardTitle>
               <Zap className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">125 kWh</div>
-              <p className="text-xs text-muted-foreground mt-1">Seit Inbetriebnahme PV-Anlage</p>
+              <div className="text-2xl font-bold">3,2 MWh</div>
+              <p className="text-xs text-muted-foreground mt-1">Seit Inbetriebnahme</p>
             </CardContent>
           </Card>
         </div>
@@ -313,29 +348,6 @@ const Verbrauch = () => {
           </CardContent>
         </Card>
 
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Geschätzte Kosten</CardTitle>
-            <CardDescription>Basierend auf Ihrem aktuellen Verbrauch</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Verbrauch Januar (298 kWh)</span>
-                <span className="font-medium">89,40 €</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Einspeisung Januar (125 kWh)</span>
-                <span className="font-medium text-status-success">- 10,00 €</span>
-              </div>
-              <div className="h-px bg-border" />
-              <div className="flex items-center justify-between">
-                <span className="font-medium">Voraussichtliche Kosten</span>
-                <span className="text-xl font-bold">79,40 €</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         <ScenarioSimulator />
       </div>

@@ -32,7 +32,7 @@ const navigationItems = [
   { to: "/meine-anschluesse", icon: Zap, label: "Anschlüsse & Verträge", tooltip: "Meine Anschlüsse und Verträge", roles: ["kunde"] as AppRole[] },
   { to: "/nachrichten", icon: Bell, label: "Benachrichtigungen", tooltip: "Meine Benachrichtigungen", roles: ["kunde"] as AppRole[] },
   { to: "/termine", icon: Calendar, label: "Termine", tooltip: "Meine Termine", roles: ["kunde"] as AppRole[] },
-  { to: "/verbrauch", icon: TrendingUp, label: "Verbrauch", tooltip: "Mein Verbrauch", roles: ["kunde"] as AppRole[] },
+  { to: "/verbrauch", icon: TrendingUp, label: "Einspeisung & Verbrauch", tooltip: "Einspeisung und Verbrauch", roles: ["kunde"] as AppRole[] },
   { to: "/antraege", icon: FileText, label: "Anträge", tooltip: "Meine Anträge", roles: ["kunde"] as AppRole[] },
   { to: "/netzkarte", icon: Info, label: "Mein Netz", tooltip: "Mein Netz", roles: ["kunde"] as AppRole[] },
   { to: "/meine-daten", icon: User, label: "Meine Daten", tooltip: "Meine Daten", roles: ["kunde"] as AppRole[] },
