@@ -35,8 +35,8 @@ const navigationItems = [
   { to: "/verbrauch", icon: TrendingUp, label: "Einspeisung & Verbrauch", tooltip: "Einspeisung und Verbrauch", roles: ["kunde"] as AppRole[] },
   { to: "/antraege", icon: FileText, label: "Anträge", tooltip: "Meine Anträge", roles: ["kunde"] as AppRole[] },
   { to: "/netzkarte", icon: Info, label: "Mein Netz", tooltip: "Mein Netz", roles: ["kunde"] as AppRole[] },
-  { to: "/meine-daten", icon: User, label: "Meine Daten", tooltip: "Meine Daten", roles: ["kunde"] as AppRole[] },
-  { to: "/meine-daten", icon: User, label: "Meine Daten", tooltip: "Meine Daten", roles: ["installateur"] as AppRole[] },
+  { to: "/meine-kundendaten", icon: User, label: "Meine Kundendaten", tooltip: "Meine Kundendaten", roles: ["kunde"] as AppRole[] },
+  { to: "/meine-installateursdaten", icon: User, label: "Meine Installateursdaten", tooltip: "Meine Installateursdaten", roles: ["installateur"] as AppRole[] },
   { to: "/rechtliches", icon: Scale, label: "Rechtliches", tooltip: "Rechtliches", roles: ["kunde"] as AppRole[] },
 
   // Kundenbetreuer (unverändert)

@@ -8,6 +8,7 @@ import { AppSidebar } from "./components/AppSidebar";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { RoleSwitcher } from "./components/RoleSwitcher";
+import { ChatBot } from "./components/ChatBot";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Zaehlerstand from "./pages/Zaehlerstand";
@@ -18,7 +19,8 @@ import NachrichtenSimple from "./pages/NachrichtenSimple";
 import Termine from "./pages/Termine";
 import Verbrauch from "./pages/Verbrauch";
 import Antraege from "./pages/Antraege";
-import MeineDaten from "./pages/MeineDaten";
+import MeineKundendaten from "./pages/MeineKundendaten";
+import MeineInstallateursdaten from "./pages/MeineInstallateursdaten";
 import MeineAnschluesse from "./pages/MeineAnschluesse";
 import Rechtliches from "./pages/Rechtliches";
 import Netzplanung from "./pages/Netzplanung";
@@ -67,12 +69,14 @@ const App = () => (
                             <Route path="/antraege/installateur" element={<InstallerView />} />
                             <Route path="/netzkarte" element={<Netzkarte />} />
                             <Route path="/netzplanung" element={<Netzplanung />} />
-                            <Route path="/meine-daten" element={<MeineDaten />} />
+                            <Route path="/meine-kundendaten" element={<MeineKundendaten />} />
+                            <Route path="/meine-installateursdaten" element={<MeineInstallateursdaten />} />
                             <Route path="/rechtliches" element={<Rechtliches />} />
                             <Route path="/antrag/neue-anlage" element={<NeueAnlage />} />
                             <Route path="/admin/setup" element={<AdminSetup />} />
                             <Route path="*" element={<NotFound />} />
                           </Routes>
+                          <ChatBot />
                         </main>
                       </div>
                     </div>

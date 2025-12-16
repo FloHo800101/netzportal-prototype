@@ -1,3 +1,4 @@
+// Trigger-Änderung für Deployment (15.12.2025)
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import {
   ComposedChart,

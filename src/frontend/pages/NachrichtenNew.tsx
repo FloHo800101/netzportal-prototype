@@ -18,6 +18,8 @@ import {
   Send,
   MessageSquare
 } from "lucide-react";
+import { ChatBotTaskDialog } from "../components/ChatBotTaskDialog";
+import { ChatBot } from "../components/ChatBot";
 
 // Rollenbasierte Dummy-Benachrichtigungen
 export const notificationsByRole = {
@@ -66,8 +68,35 @@ export const notificationsByRole = {
     news: [
       // ...bestehende Einträge für Kunde...
     ],
+    posteingang: [
+      {
+        id: 1001,
+        title: "Vertragsbestätigung erhalten",
+        description: "Ihr Netzanschlussvertrag wurde bestätigt. Sie finden das Dokument im Bereich 'Anschlüsse & Verträge'.",
+        date: "10.12.2025",
+        read: false
+      },
+      {
+        id: 1002,
+        title: "Neue Rechnung verfügbar",
+        description: "Ihre Rechnung für November 2025 steht zum Download bereit.",
+        date: "05.12.2025",
+        read: true
+      }
+    ],
     postausgang: [
-      // ...bestehende Einträge für Kunde...
+      {
+        id: 2001,
+        title: "Zählerstand übermittelt",
+        description: "Sie haben am 12.12.2025 einen neuen Zählerstand gemeldet.",
+        date: "12.12.2025"
+      },
+      {
+        id: 2002,
+        title: "Dokumente für Antrag hochgeladen",
+        description: "Sie haben am 09.12.2025 neue Dokumente für Ihren Antrag eingereicht.",
+        date: "09.12.2025"
+      }
     ],
   },
   installateur: {
@@ -141,6 +170,10 @@ const NachrichtenNew = () => {
   const [activeTab, setActiveTab] = useState("todo");
   const [eingangFilter, setEingangFilter] = useState("alle");
   const [notifications, setNotifications] = useState(notificationsByRole[activeRole]);
+  const [chatBotOpen, setChatBotOpen] = useState(false);
+  const [chatBotContext, setChatBotContext] = useState("");
+  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const [taskType, setTaskType] = useState("");
 
   // Wenn sich die Rolle ändert, Benachrichtigungen neu laden
   useEffect(() => {
@@ -177,6 +210,17 @@ const NachrichtenNew = () => {
       ...prev,
       todo: prev.todo.filter(item => item.id !== id)
     }));
+  };
+
+  const handleChatBotTask = (type: string, context: string) => {
+    setTaskType(type);
+    setChatBotContext(context);
+    setTaskDialogOpen(true);
+  };
+
+  const handleSendToChatBot = (question: string) => {
+    setChatBotContext(question);
+    setChatBotOpen(true);
   };
 
   const unreadCount = {
@@ -270,6 +314,20 @@ const NachrichtenNew = () => {
                     <Button variant="outline" onClick={() => completeTodo(todo.id)}>
                       <Check className="w-4 h-4 mr-2" />
                       Als erledigt markieren
+                    </Button>
+                    <Button
+                      className="ml-auto bg-gradient-to-r from-blue-500 to-fuchsia-600 text-white shadow-md hover:from-blue-600 hover:to-fuchsia-700"
+                      onClick={() => {
+                        // Aufgaben-Typ bestimmen
+                        let type = "";
+                        if (todo.title.toLowerCase().includes("zählerstand")) type = "zaehlerstand";
+                        else if (todo.title.toLowerCase().includes("vertrag")) type = "vertrag";
+                        else if (todo.title.toLowerCase().includes("dokument")) type = "dokumente";
+                        handleChatBotTask(type, todo.title + " - " + todo.description);
+                      }}
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Fragen an den Chatbot
                     </Button>
                   </CardFooter>
                 </Card>
@@ -781,6 +839,20 @@ const NachrichtenNew = () => {
             ))}
           </TabsContent>
         </Tabs>
+
+        <ChatBotTaskDialog
+          open={taskDialogOpen}
+          onClose={() => setTaskDialogOpen(false)}
+          context={chatBotContext}
+          taskType={taskType}
+          onSend={handleSendToChatBot}
+        />
+        {chatBotOpen && (
+          <ChatBot
+            initialMessage={chatBotContext ? chatBotContext : undefined}
+            onClose={() => setChatBotOpen(false)}
+          />
+        )}
       </div>
     </div>
   );

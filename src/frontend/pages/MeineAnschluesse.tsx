@@ -1,750 +1,253 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { FileText, Zap, Calendar, Download, Home, Thermometer, Sun, Calculator, Database, UserCheck, Receipt, TrendingUp, Headphones, Check, Upload } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
-import { Label } from "../components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import { Textarea } from "../components/ui/textarea";
-import { Input } from "../components/ui/input";
-import { useState } from "react";
+import { FileText, Home, Thermometer, Sun, Receipt, Download } from "lucide-react";
+import React, { useState } from "react";
+import { ChatBotTaskDialog } from "../components/ChatBotTaskDialog";
 
-const MeineAnschluesse = () => {
-          // State für Serviceanfrage-Dialog
-          const [isServiceDialogOpen, setIsServiceDialogOpen] = useState(false);
-          const [serviceSelectedAnschluss, setServiceSelectedAnschluss] = useState("");
-          const [serviceSelectedVertrag, setServiceSelectedVertrag] = useState("");
-          const [serviceSelectedArt, setServiceSelectedArt] = useState("");
-          const [serviceBeschreibung, setServiceBeschreibung] = useState("");
-
-          // Servicearten
-          const serviceArten = [
-            { value: "stammdaten", label: "Stammdatenänderung" },
-            { value: "betreiberwechsel", label: "Betreiberwechsel" },
-            { value: "betriebsweise", label: "Betriebsweise ändern" },
-            { value: "stilllegung", label: "Stilllegung/Modultausch" },
-            { value: "steuerliche-behandlung", label: "Steuerliche Behandlung" },
-            { value: "rechnungskorrektur", label: "Rechnungskorrektur" }
-          ];
-
-          // Handler für Serviceanfrage-Formular
-          const handleServiceSubmit = (e: React.FormEvent) => {
-            e.preventDefault();
-            // Hier könnte ein API-Call erfolgen
-            setIsServiceDialogOpen(false);
-            setServiceSelectedAnschluss("");
-            setServiceSelectedVertrag("");
-            setServiceSelectedArt("");
-            setServiceBeschreibung("");
-            // Optional: Feedback/Toast anzeigen
-          };
-        // Handler für das Absenden der Serviceanfrage
-        const handleSubmit = (e: React.FormEvent) => {
-          e.preventDefault();
-          // Hier könnte ein API-Call erfolgen
-          setIsDialogOpen(false);
-          setSelectedAnschluss("");
-          setSelectedServiceArt("");
-          setBeschreibung("");
-          // Optional: Feedback/Toast anzeigen
-        };
-      // Handler für das Absenden des Zählerstand-Dialogs
-      const handleZaehlerstandSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        // Hier könnte ein API-Call erfolgen
-        setZaehlerstandSubmitted(true);
+// Hilfsfunktion für Label und Placeholder je Serviceart
+function getBeschreibungConfig(art: string) {
+  switch (art) {
+    case "stammdaten":
+      return {
+        label: "Welche Stammdaten sollen geändert werden?",
+        placeholder: "Bitte beschreiben Sie die gewünschten Änderungen (z. B. Name, Adresse, Bankverbindung)..."
       };
-    // State für Dialoge und Formulare
-    const [isZaehlerstandDialogOpen, setIsZaehlerstandDialogOpen] = useState(false);
-    const [zaehlerstandSubmitted, setZaehlerstandSubmitted] = useState(false);
-    const [selectedZaehler, setSelectedZaehler] = useState("");
-    const [zaehlerstand, setZaehlerstand] = useState("");
-    const [ablesedatum, setAblesedatum] = useState("");
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [selectedAnschluss, setSelectedAnschluss] = useState("");
-    const [selectedServiceArt, setSelectedServiceArt] = useState("");
-    const [beschreibung, setBeschreibung] = useState("");
-  const anschluesse = [
-    {
-      id: 1,
-      typ: "Hausanschluss",
-      icon: Home,
-      zaehlerNummer: "1234567890",
-      anschlussnummer: "HA-2024-001",
-      adresse: "Musterstraße 123, 12345 Musterstadt",
-      leistung: "35 kW",
-      netzebene: "Niederspannung",
-      inbetriebnahme: "15.03.2020",
-      status: "Aktiv",
-      vertraege: [
-        {
-          vertragsNummer: "V-HA-2024-001",
-          typ: "Netzanschlussvertrag",
-          beginn: "15.03.2020",
-          ende: "unbefristet",
-          dokument: "netzanschlussvertrag_hausanschluss.pdf"
-        }
-      ]
-    },
-    {
-      id: 2,
-      typ: "Wärmepumpenanschluss",
-      icon: Thermometer,
-      zaehlerNummer: "WP-2025-001",
-      anschlussnummer: "WP-2025-001",
-      adresse: "Musterstraße 123, 12345 Musterstadt",
-      leistung: "12 kW",
-      netzebene: "Niederspannung",
-      inbetriebnahme: "01.09.2023",
-      status: "Aktiv",
-      vertraege: [
-        {
-          vertragsNummer: "V-WP-2025-001",
-          typ: "Wärmepumpen-Sondervertrag",
-          beginn: "01.09.2023",
-          ende: "unbefristet",
-          dokument: "waermepumpe_vertrag.pdf"
-        }
-      ]
-    },
-    {
-      id: 3,
-      typ: "PV-Anlage (Einspeiser)",
-      icon: Sun,
-      zaehlerNummer: "PV-2025-001",
-      anschlussnummer: "PV-2025-001",
-      adresse: "Musterstraße 123, 12345 Musterstadt",
-      leistung: "8 kWp",
-      netzebene: "Niederspannung",
-      inbetriebnahme: "10.06.2022",
-      status: "Aktiv",
-      vertraege: [
-        {
-          vertragsNummer: "V-PV-2025-001",
-          typ: "Einspeisevertrag",
-          beginn: "10.06.2022",
-          ende: "09.06.2042",
-          dokument: "einspeisevertrag_pv.pdf"
-        }
-      ],
-      gutschriften: [
-        { monat: "November 2025", betrag: "112,34 €" },
-        { monat: "Oktober 2025", betrag: "98,76 €" },
-        { monat: "September 2025", betrag: "105,67 €" }
-      ]
-    }
-  ];
+    case "betreiberwechsel":
+      return {
+        label: "Details zum Betreiberwechsel",
+        placeholder: "Bitte geben Sie den neuen Betreiber und das gewünschte Wechsel-Datum an..."
+      };
+    case "betriebsweise":
+      return {
+        label: "Gewünschte Änderung der Betriebsweise",
+        placeholder: "Bitte beschreiben Sie die gewünschte Änderung (z. B. Eigenverbrauch, Volleinspeisung)..."
+      };
+    case "stilllegung":
+      return {
+        label: "Angaben zur Stilllegung oder Modultausch",
+        placeholder: "Bitte geben Sie das Datum und den Grund der Stilllegung oder Details zum Modultausch an..."
+      };
+    case "steuerliche-behandlung":
+      return {
+        label: "Angaben zur steuerlichen Behandlung",
+        placeholder: "Bitte beschreiben Sie Ihr Anliegen zur steuerlichen Behandlung..."
+      };
+    case "rechnungskorrektur":
+      return {
+        label: "Grund für die Rechnungskorrektur",
+        placeholder: "Bitte beschreiben Sie, was an der Rechnung korrigiert werden soll..."
+      };
+    default:
+      return {
+        label: "Beschreibung/Anliegen",
+        placeholder: "Bitte beschreiben Sie Ihr Anliegen..."
+      };
+  }
+}
 
-  // ...hier müssen alle useState-Hooks und Handler deklariert werden, falls sie fehlen...
+// Typdefinitionen
+interface Vertrag {
+  vertragsNummer: string;
+  typ: string;
+  beginn: string;
+  ende: string;
+  dokument: string;
+}
 
-  const handleZaehlerstandDialogClose = () => {
-    setIsZaehlerstandDialogOpen(false);
-    setZaehlerstandSubmitted(false);
-    setSelectedZaehler("");
-    setZaehlerstand("");
-    setAblesedatum("");
-  };
+interface Rechnung {
+  rechnungsNummer: string;
+  betrag: string;
+  datum: string;
+  dokument: string;
+}
+
+interface Gutschrift {
+  monat: string;
+  betrag: string;
+}
+
+interface Anschluss {
+  id: number;
+  typ: string;
+  icon: React.ElementType;
+  zaehlerNummer: string;
+  anschlussnummer: string;
+  adresse: string;
+  leistung: string;
+  netzebene: string;
+  inbetriebnahme: string;
+  status: string;
+  vertraege: Vertrag[];
+  rechnungen?: Rechnung[];
+  gutschriften?: Gutschrift[];
+}
+
+const anschluesse: Anschluss[] = [
+  {
+    id: 1,
+    typ: "Hausanschluss",
+    icon: Home,
+    zaehlerNummer: "1234567890",
+    anschlussnummer: "HA-2024-001",
+    adresse: "Musterstraße 123, 12345 Musterstadt",
+    leistung: "35 kW",
+    netzebene: "Niederspannung",
+    inbetriebnahme: "15.03.2020",
+    status: "Aktiv",
+    vertraege: [
+      {
+        vertragsNummer: "V-HA-2024-001",
+        typ: "Netzanschlussvertrag",
+        beginn: "15.03.2020",
+        ende: "unbefristet",
+        dokument: "netzanschlussvertrag_hausanschluss.pdf"
+      }
+    ],
+    rechnungen: [
+      {
+        rechnungsNummer: "R-HA-2020-001",
+        betrag: "1.200,00 €",
+        datum: "20.03.2020",
+        dokument: "rechnung_hausanschluss_2020.pdf"
+      }
+    ]
+  },
+  {
+    id: 2,
+    typ: "Wärmepumpenanschluss",
+    icon: Thermometer,
+    zaehlerNummer: "WP-2025-001",
+    anschlussnummer: "WP-2025-001",
+    adresse: "Musterstraße 123, 12345 Musterstadt",
+    leistung: "12 kW",
+    netzebene: "Niederspannung",
+    inbetriebnahme: "01.09.2023",
+    status: "Aktiv",
+    vertraege: [
+      {
+        vertragsNummer: "V-WP-2025-001",
+        typ: "Wärmepumpen-Sondervertrag",
+        beginn: "01.09.2023",
+        ende: "unbefristet",
+        dokument: "waermepumpe_vertrag.pdf"
+      }
+    ]
+  },
+  {
+    id: 3,
+    typ: "PV-Anlage (Einspeiser)",
+    icon: Sun,
+    zaehlerNummer: "PV-2025-001",
+    anschlussnummer: "PV-2025-001",
+    adresse: "Musterstraße 123, 12345 Musterstadt",
+    leistung: "8 kWp",
+    netzebene: "Niederspannung",
+    inbetriebnahme: "10.06.2022",
+    status: "Aktiv",
+    vertraege: [
+      {
+        vertragsNummer: "V-PV-2025-001",
+        typ: "Einspeisevertrag",
+        beginn: "10.06.2022",
+        ende: "09.06.2042",
+        dokument: "einspeisevertrag_pv.pdf"
+      }
+    ],
+    gutschriften: [
+      { monat: "November 2025", betrag: "112,34 €" },
+      { monat: "Oktober 2025", betrag: "98,76 €" },
+      { monat: "September 2025", betrag: "105,67 €" }
+    ]
+  }
+];
+
+const MeineAnschluesse: React.FC = () => {
+  const [openChatBotId, setOpenChatBotId] = useState<number | null>(null);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Meine Anschlüsse & Verträge</h1>
-            <p className="text-muted-foreground">Übersicht über Ihre Netzanschlüsse und Vertragsdetails</p>
-          </div>
-          <div className="flex gap-2">
-            {/* Neuer Serviceanfrage-Dialog mit dynamischen Feldern */}
-            <Dialog open={isServiceDialogOpen} onOpenChange={setIsServiceDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="gap-2">
-                  <Headphones className="w-4 h-4" />
-                  Serviceanfrage stellen
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px]">
-                <DialogHeader>
-                  <DialogTitle>Serviceanfrage stellen</DialogTitle>
-                  <DialogDescription>
-                    Stellen Sie eine Serviceanfrage zu einem Ihrer Anschlüsse oder Verträge
-                  </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleServiceSubmit} className="space-y-4 py-4">
-                  {/* Anschlussauswahl */}
-                  <div className="space-y-2">
-                    <Label htmlFor="anschluss">Anschluss / Zählernummer</Label>
-                    <Select value={serviceSelectedAnschluss} onValueChange={setServiceSelectedAnschluss}>
-                      <SelectTrigger id="anschluss">
-                        <SelectValue placeholder="Anschluss auswählen" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {anschluesse.map((anschluss) => (
-                          <SelectItem key={anschluss.id} value={anschluss.zaehlerNummer}>
-                            {anschluss.typ} - {anschluss.zaehlerNummer}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Serviceart-Auswahl */}
-                  <div className="space-y-2">
-                    <Label htmlFor="serviceart">Serviceart</Label>
-                    <Select value={serviceSelectedArt} onValueChange={setServiceSelectedArt}>
-                      <SelectTrigger id="serviceart">
-                        <SelectValue placeholder="Serviceart auswählen" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {serviceArten.map((art) => (
-                          <SelectItem key={art.value} value={art.value}>{art.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Dynamische Felder je Serviceart */}
-                  {(["stammdaten","betriebsweise","steuerliche-behandlung"].includes(serviceSelectedArt)) && (
-                    <div className="space-y-2">
-                      <Label>Vertrag auswählen</Label>
-                      <Select value={serviceSelectedVertrag} onValueChange={setServiceSelectedVertrag}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Vertrag auswählen" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {(anschluesse.find(a => a.zaehlerNummer === serviceSelectedAnschluss)?.vertraege || []).map((v, idx) => (
-                            <SelectItem key={idx} value={v.vertragsNummer}>{v.typ} ({v.vertragsNummer})</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-
-                  {serviceSelectedArt === "stammdaten" && (
-                    <div className="space-y-2">
-                      <Label>Straße</Label>
-                      <Input defaultValue="Musterstraße 123" />
-                      <Label>PLZ</Label>
-                      <Input defaultValue="12345" />
-                      <Label>Ort</Label>
-                      <Input defaultValue="Musterstadt" />
-                      <Label>Bankverbindung</Label>
-                      <Input defaultValue="DE12 3456 7890 1234 5678 00" />
-                      <Label>Beschreibung / Anliegen</Label>
-                      <Textarea placeholder="Beschreiben Sie hier Ihr Anliegen..." value={serviceBeschreibung} onChange={e => setServiceBeschreibung(e.target.value)} />
-                    </div>
-                  )}
-
-                  {serviceSelectedArt === "betriebsweise" && (
-                    <div className="space-y-2">
-                      <Label>Aktuelle Betriebsweise</Label>
-                      <Input defaultValue="Volleinspeisung" disabled />
-                      <Label>Neue Betriebsweise</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Neue Betriebsweise wählen" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="volleinspeisung">Volleinspeisung</SelectItem>
-                          <SelectItem value="eigenverbrauch">Eigenverbrauch</SelectItem>
-                          <SelectItem value="kombi">Kombination</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Label>Beschreibung / Anliegen</Label>
-                      <Textarea placeholder="Beschreiben Sie hier Ihr Anliegen..." value={serviceBeschreibung} onChange={e => setServiceBeschreibung(e.target.value)} />
-                    </div>
-                  )}
-
-                  {serviceSelectedArt === "betreiberwechsel" && (
-                    <div className="space-y-2">
-                      <Label>Aktueller Betreiber</Label>
-                      <Input placeholder="Name aktueller Betreiber" defaultValue="Max Mustermann" />
-                      <Label>Neuer Betreiber</Label>
-                      <Input placeholder="Name neuer Betreiber" />
-                      <Label>Beschreibung / Anliegen</Label>
-                      <Textarea placeholder="Beschreiben Sie hier Ihr Anliegen..." value={serviceBeschreibung} onChange={e => setServiceBeschreibung(e.target.value)} />
-                    </div>
-                  )}
-
-                  {serviceSelectedArt === "stilllegung" && (
-                    <div className="space-y-2">
-                      <Label>Stilllegung/Modultausch</Label>
-                      <Button asChild variant="link">
-                        <a href="/antrag/neue-anlage?art=stilllegung" target="_blank" rel="noopener noreferrer">
-                          Zur Antragsstrecke "Anlagenrückbau"
-                        </a>
-                      </Button>
-                      <Textarea placeholder="Fragen zur Stilllegung oder Modultausch..." value={serviceBeschreibung} onChange={e => setServiceBeschreibung(e.target.value)} />
-                    </div>
-                  )}
-
-                  {serviceSelectedArt === "steuerliche-behandlung" && (
-                    <div className="space-y-2">
-                      <Label>Beschreibung / Anliegen</Label>
-                      <Textarea placeholder="Ihr Anliegen zur steuerlichen Behandlung..." value={serviceBeschreibung} onChange={e => setServiceBeschreibung(e.target.value)} />
-                    </div>
-                  )}
-
-                  {serviceSelectedArt === "rechnungskorrektur" && (
-                    <div className="space-y-2">
-                      <Label>Rechnung auswählen</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Rechnung auswählen" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {/* Beispieldaten */}
-                          <SelectItem value="R-HA-2023-001">Hausanschlussrechnung (R-HA-2023-001) - 2.450,00 €</SelectItem>
-                          <SelectItem value="R-PV-2025-002">PV-Gutschrift Dezember (R-PV-2025-002) - 105,67 €</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Label>Beschreibung / Anliegen</Label>
-                      <Textarea placeholder="Fragen zur Rechnung..." value={serviceBeschreibung} onChange={e => setServiceBeschreibung(e.target.value)} />
-                    </div>
-                  )}
-
-                  {/* Standard-Beschreibung für alle anderen */}
-                  {["stammdaten","betriebsweise","betreiberwechsel","stilllegung","steuerliche-behandlung","rechnungskorrektur"].includes(serviceSelectedArt) ? null : (
-                    <div className="space-y-2">
-                      <Label>Beschreibung / Anliegen</Label>
-                      <Textarea
-                        placeholder="Beschreiben Sie hier Ihr Anliegen..."
-                        value={serviceBeschreibung}
-                        onChange={e => setServiceBeschreibung(e.target.value)}
-                        rows={4}
-                      />
-                    </div>
-                  )}
-
-                  <div className="flex justify-end gap-3">
-                    <Button variant="outline" type="button" onClick={() => setIsServiceDialogOpen(false)}>
-                      Abbrechen
-                    </Button>
-                    <Button type="submit" disabled={!serviceSelectedAnschluss || !serviceSelectedArt || !serviceBeschreibung}>
-                      Anfrage absenden
+    <div className="space-y-8">
+      <h1 className="text-3xl font-bold text-foreground">Meine Anschlüsse & Verträge</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {anschluesse.map((anschluss) => (
+          <Card key={anschluss.id} className="relative pb-12">
+            <CardHeader className="flex flex-row items-center gap-2">
+              <anschluss.icon className="w-6 h-6 text-primary" />
+              <div>
+                <CardTitle className="text-lg">{anschluss.typ}</CardTitle>
+                <CardDescription className="text-xs">{anschluss.anschlussnummer}</CardDescription>
+              </div>
+              <Badge className="ml-auto" variant="outline">{anschluss.status}</Badge>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="text-sm text-muted-foreground">{anschluss.adresse}</div>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <span>Leistung: {anschluss.leistung}</span>
+                <span>Netzebene: {anschluss.netzebene}</span>
+                <span>Inbetriebnahme: {anschluss.inbetriebnahme}</span>
+              </div>
+              <div className="mt-2">
+                <div className="font-semibold text-xs mb-1">Verträge:</div>
+                {anschluss.vertraege.map((vertrag) => (
+                  <div key={vertrag.vertragsNummer} className="flex items-center gap-2 text-xs mb-1">
+                    <FileText className="w-4 h-4 text-muted-foreground" />
+                    <span>{vertrag.typ} ({vertrag.vertragsNummer})</span>
+                    <span className="ml-auto">{vertrag.beginn} – {vertrag.ende}</span>
+                    <Button variant="ghost" size="icon" className="ml-2" title="Download Vertrag">
+                      <Download className="w-4 h-4" />
                     </Button>
                   </div>
-                </form>
-              </DialogContent>
-            </Dialog>
-            <Dialog open={isZaehlerstandDialogOpen} onOpenChange={setIsZaehlerstandDialogOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  <Calculator className="w-4 h-4" />
-                  Zählerstand melden
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px]">
-                {!zaehlerstandSubmitted ? (
-                  <>
-                    <DialogHeader>
-                      <DialogTitle>Zählerstand übermitteln</DialogTitle>
-                      <DialogDescription>
-                        Geben Sie Ihren aktuellen Zählerstand ein
-                      </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleZaehlerstandSubmit} className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="zaehler">Zähler auswählen</Label>
-                        <Select value={selectedZaehler} onValueChange={setSelectedZaehler}>
-                          <SelectTrigger id="zaehler">
-                            <SelectValue placeholder="Zähler auswählen" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {anschluesse.map((anschluss) => (
-                              <SelectItem key={anschluss.id} value={anschluss.zaehlerNummer}>
-                                {anschluss.typ} - {anschluss.zaehlerNummer}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="zaehlerstand">Aktueller Zählerstand (kWh)</Label>
-                        <Input 
-                          id="zaehlerstand" 
-                          type="number" 
-                          placeholder="12345" 
-                          value={zaehlerstand}
-                          onChange={(e) => setZaehlerstand(e.target.value)}
-                          required
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="ablesedatum">Ablesedatum</Label>
-                        <Input 
-                          id="ablesedatum" 
-                          type="date" 
-                          value={ablesedatum}
-                          onChange={(e) => setAblesedatum(e.target.value)}
-                          required
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="foto">Foto hochladen (optional)</Label>
-                        <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
-                          <Upload className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
-                          <p className="text-sm text-muted-foreground">Foto des Zählerstands hinzufügen</p>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2 pt-4">
-                        <Button 
-                          type="button" 
-                          variant="outline" 
-                          className="flex-1"
-                          onClick={handleZaehlerstandDialogClose}
-                        >
-                          Abbrechen
-                        </Button>
-                        <Button 
-                          type="submit" 
-                          className="flex-1"
-                          disabled={!selectedZaehler || !zaehlerstand || !ablesedatum}
-                        >
-                          Zählerstand übermitteln
-                        </Button>
-                      </div>
-                    </form>
-                  </>
-                ) : (
-                  <div className="py-8">
-                    <div className="text-center">
-                      <div className="mx-auto w-16 h-16 bg-status-success/10 rounded-full flex items-center justify-center mb-4">
-                        <Check className="w-8 h-8 text-status-success" />
-                      </div>
-                      <DialogTitle className="text-2xl mb-2">Erfolgreich übermittelt</DialogTitle>
-                      <DialogDescription className="mb-6">
-                        Ihre Referenznummer: ZS-2025-{Math.floor(Math.random() * 900000 + 100000)}
-                      </DialogDescription>
-                      <p className="text-sm text-muted-foreground mb-6">
-                        Ihr Zählerstand wurde erfolgreich gespeichert und wird in Ihrer nächsten Abrechnung berücksichtigt.
-                      </p>
-                      <Button onClick={handleZaehlerstandDialogClose} className="w-full">
-                        Schließen
+                ))}
+              </div>
+              {anschluss.rechnungen?.length ? (
+                <div className="mt-2">
+                  <div className="font-semibold text-xs mb-1">Rechnungen:</div>
+                  {anschluss.rechnungen.map((rechnung) => (
+                    <div key={rechnung.rechnungsNummer} className="flex items-center gap-2 text-xs mb-1">
+                      <Receipt className="w-4 h-4 text-muted-foreground" />
+                      <span>{rechnung.rechnungsNummer} ({rechnung.datum}):</span>
+                      <span>{rechnung.betrag}</span>
+                      <Button variant="ghost" size="icon" className="ml-2" title="Download Rechnung">
+                        <Download className="w-4 h-4" />
                       </Button>
                     </div>
-                  </div>
-                )}
-              </DialogContent>
-            </Dialog>
-            
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="gap-2">
-                  <Headphones className="w-4 h-4" />
-                  Serviceanfrage stellen
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px]">
-                <DialogHeader>
-                  <DialogTitle>Serviceanfrage stellen</DialogTitle>
-                  <DialogDescription>
-                    Stellen Sie eine Serviceanfrage zu einem Ihrer Anschlüsse oder Verträge
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="anschluss">Anschluss / Zählernummer</Label>
-                    <Select value={selectedAnschluss} onValueChange={setSelectedAnschluss}>
-                      <SelectTrigger id="anschluss">
-                        <SelectValue placeholder="Anschluss auswählen" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {anschluesse.map((anschluss) => (
-                          <SelectItem key={anschluss.id} value={anschluss.zaehlerNummer}>
-                            {anschluss.typ} - {anschluss.zaehlerNummer}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  {/* Vertragsauswahl für relevante Servicearten */}
-                  {(["stammdaten","betriebsweise","steuerliche-behandlung"].includes(selectedServiceArt)) && (
-                    <div className="space-y-2">
-                      <Label>Vertrag auswählen</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Vertrag auswählen" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {anschluesse
-                            .find((a) => a.zaehlerNummer === selectedAnschluss)?.vertraege?.map((v, idx) => (
-                              <SelectItem key={idx} value={v.vertragsNummer}>{v.typ} ({v.vertragsNummer})</SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-
-                  {/* Stammdatenänderung */}
-                  {selectedServiceArt === "stammdaten" && (
-                    <div className="space-y-2">
-                      <Label>Straße</Label>
-                      <Input defaultValue="Musterstraße 123" />
-                      <Label>PLZ</Label>
-                      <Input defaultValue="12345" />
-                      <Label>Ort</Label>
-                      <Input defaultValue="Musterstadt" />
-                      <Label>Bankverbindung</Label>
-                      <Input defaultValue="DE12 3456 7890 1234 5678 00" />
-                      <Label>Beschreibung / Anliegen</Label>
-                      <Textarea placeholder="Beschreiben Sie hier Ihr Anliegen..." />
-                    </div>
-                  )}
-
-                  {/* Betriebsweise ändern */}
-                  {selectedServiceArt === "betriebsweise" && (
-                    <div className="space-y-2">
-                      <Label>Aktuelle Betriebsweise</Label>
-                      <Input defaultValue="Volleinspeisung" disabled />
-                      <Label>Neue Betriebsweise</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Neue Betriebsweise wählen" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="volleinspeisung">Volleinspeisung</SelectItem>
-                          <SelectItem value="eigenverbrauch">Eigenverbrauch</SelectItem>
-                          <SelectItem value="kombi">Kombination</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Label>Beschreibung / Anliegen</Label>
-                      <Textarea placeholder="Beschreiben Sie hier Ihr Anliegen..." />
-                    </div>
-                  )}
-
-                  {/* Betreiberwechsel */}
-                  {selectedServiceArt === "betreiberwechsel" && (
-                    <div className="space-y-2">
-                      <Label>Aktueller Betreiber</Label>
-                      <Input placeholder="Name aktueller Betreiber" defaultValue="Max Mustermann" />
-                      <Label>Neuer Betreiber</Label>
-                      <Input placeholder="Name neuer Betreiber" />
-                      <Label>Beschreibung / Anliegen</Label>
-                      <Textarea placeholder="Beschreiben Sie hier Ihr Anliegen..." />
-                    </div>
-                  )}
-
-                  {/* Stilllegung/Modultausch */}
-                  {selectedServiceArt === "stilllegung" && (
-                    <div className="space-y-2">
-                      <Label>Stilllegung/Modultausch</Label>
-                      <Button asChild variant="link">
-                        <a href="/antrag/neue-anlage?art=stilllegung" target="_blank" rel="noopener noreferrer">
-                          Zur Antragsstrecke "Anlagenrückbau"
-                        </a>
-                      </Button>
-                      <Textarea placeholder="Fragen zur Stilllegung oder Modultausch..." />
-                    </div>
-                  )}
-
-                  {/* Steuerliche Behandlung */}
-                  {selectedServiceArt === "steuerliche-behandlung" && (
-                    <div className="space-y-2">
-                      <Label>Beschreibung / Anliegen</Label>
-                      <Textarea placeholder="Ihr Anliegen zur steuerlichen Behandlung..." />
-                    </div>
-                  )}
-
-                  {/* Rechnungskorrektur */}
-                  {selectedServiceArt === "rechnungskorrektur" && (
-                    <div className="space-y-2">
-                      <Label>Rechnung auswählen</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Rechnung auswählen" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {/* Beispieldaten */}
-                          <SelectItem value="R-HA-2023-001">Hausanschlussrechnung (R-HA-2023-001) - 2.450,00 €</SelectItem>
-                          <SelectItem value="R-PV-2025-002">PV-Gutschrift Dezember (R-PV-2025-002) - 105,67 €</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Label>Beschreibung / Anliegen</Label>
-                      <Textarea placeholder="Fragen zur Rechnung..." />
-                    </div>
-                  )}
-
-                  {/* Standard-Beschreibung für alle anderen */}
-                  {["stammdaten","betriebsweise","betreiberwechsel","stilllegung","steuerliche-behandlung","rechnungskorrektur"].includes(selectedServiceArt) ? null : (
-                    <div className="space-y-2">
-                      <Label htmlFor="beschreibung">Beschreibung / Anliegen</Label>
-                      <Textarea
-                        id="beschreibung"
-                        placeholder="Beschreiben Sie hier Ihr Anliegen..."
-                        value={beschreibung}
-                        onChange={(e) => setBeschreibung(e.target.value)}
-                        rows={5}
-                      />
-                    </div>
-                  )}
+                  ))}
                 </div>
-                <div className="flex justify-end gap-3">
-                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Abbrechen
-                  </Button>
-                  <Button onClick={handleSubmit} disabled={!selectedAnschluss || !selectedServiceArt || !beschreibung}>
-                    Anfrage absenden
-                  </Button>
+              ) : null}
+              {anschluss.gutschriften?.length ? (
+                <div className="mt-2">
+                  <div className="font-semibold text-xs mb-1">Gutschriften:</div>
+                  {anschluss.gutschriften.map((gutschrift) => (
+                    <div key={gutschrift.monat} className="flex items-center gap-2 text-xs mb-1">
+                      <Receipt className="w-4 h-4 text-muted-foreground" />
+                      <span>{gutschrift.monat}:</span>
+                      <span className="ml-auto">{gutschrift.betrag}</span>
+                    </div>
+                  ))}
                 </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          {anschluesse.map((anschluss) => {
-            const Icon = anschluss.icon;
-            return (
-              <Card key={anschluss.id}>
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <Icon className="w-6 h-6 text-primary" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-xl">{anschluss.typ}</CardTitle>
-                        <CardDescription>Anschlussnummer: {anschluss.anschlussnummer}</CardDescription>
-                      </div>
-                    </div>
-                    <Badge variant={anschluss.status === "Aktiv" ? "default" : "secondary"}>
-                      {anschluss.status}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Anschlussdaten */}
-                  <div>
-                    <h3 className="font-semibold mb-3 flex items-center gap-2">
-                      <Zap className="w-4 h-4" />
-                      Anschlussdaten
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-muted/50 p-4 rounded-lg">
-                      <div>
-                        <p className="text-sm text-muted-foreground">Zählernummer</p>
-                        <p className="font-medium">{anschluss.zaehlerNummer}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Anschlussleistung</p>
-                        <p className="font-medium">{anschluss.leistung}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Adresse</p>
-                        <p className="font-medium">{anschluss.adresse}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Netzebene</p>
-                        <p className="font-medium">{anschluss.netzebene}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Inbetriebnahme</p>
-                        <p className="font-medium">{anschluss.inbetriebnahme}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Verträge */}
-                  <div>
-                    <h3 className="font-semibold mb-3 flex items-center gap-2">
-                      <FileText className="w-4 h-4" />
-                      Zugehörige Verträge ({anschluss.vertraege.length})
-                    </h3>
-                    <div className="space-y-3">
-                      {anschluss.vertraege.map((vertrag, index) => (
-                        <div 
-                          key={index}
-                          className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                        >
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <p className="font-medium">{vertrag.typ}</p>
-                              <Badge variant="outline" className="text-xs">
-                                {vertrag.vertragsNummer}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                              Laufzeit: {vertrag.beginn} - {vertrag.ende}
-                            </p>
-                          </div>
-                          <Button variant="outline" size="sm" className="gap-2">
-                            <Download className="w-4 h-4" />
-                            PDF
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Rechnungen für Hausanschluss */}
-                  {anschluss.rechnungen && anschluss.rechnungen.length > 0 && (
-                    <div>
-                      <h3 className="font-semibold mb-3 flex items-center gap-2">
-                        <Receipt className="w-4 h-4" />
-                        Rechnungen ({anschluss.rechnungen.length})
-                      </h3>
-                      <div className="space-y-3">
-                        {anschluss.rechnungen.map((rechnung, idx) => (
-                          <div key={idx} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <p className="font-medium">{rechnung.typ}</p>
-                                <Badge variant="outline" className="text-xs">
-                                  {rechnung.rechnungsNummer}
-                                </Badge>
-                              </div>
-                              <p className="text-sm text-muted-foreground">
-                                Datum: {rechnung.datum} • Betrag: {rechnung.betrag}
-                              </p>
-                            </div>
-                            <Button variant="outline" size="sm" className="gap-2">
-                              <Download className="w-4 h-4" />
-                              PDF
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Gutschriften für PV-Anlage */}
-                  {anschluss.gutschriften && anschluss.gutschriften.length > 0 && (
-                    <div>
-                      <h3 className="font-semibold mb-3 flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4 text-status-success" />
-                        Gutschriften der letzten 3 Monate
-                      </h3>
-                      <div className="space-y-3">
-                        {anschluss.gutschriften.map((g, idx) => (
-                          <div key={idx} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <p className="font-medium">{g.monat}</p>
-                              </div>
-                              <p className="text-sm text-muted-foreground">
-                                Betrag: <span className="font-medium text-status-success">{g.betrag}</span>
-                              </p>
-                            </div>
-                            <Button variant="outline" size="sm" className="gap-2">
-                              <Download className="w-4 h-4" />
-                              PDF
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+              ) : null}
+            </CardContent>
+            <div className="absolute right-4 bottom-4">
+              <Button
+                size="sm"
+                onClick={() => setOpenChatBotId(anschluss.id)}
+                className="bg-gradient-to-r from-blue-500 to-fuchsia-600 text-white shadow-md hover:from-blue-600 hover:to-fuchsia-700"
+              >
+                Fragen an den Chatbot
+              </Button>
+            </div>
+            <ChatBotTaskDialog
+              open={openChatBotId === anschluss.id}
+              onClose={() => setOpenChatBotId(null)}
+              context={`Fragen zu ${anschluss.typ} (${anschluss.anschlussnummer})`}
+              taskType={"anschluss"}
+              onSend={() => {}}
+            />
+          </Card>
+        ))}
       </div>
     </div>
+
   );
 };
 

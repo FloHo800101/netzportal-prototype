@@ -11,7 +11,11 @@ const MeineDaten = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">Meine Daten</h1>
-          <p className="text-muted-foreground mb-4">Installateur: <span className="font-semibold">Andreas Anlagenbau GmbH</span></p>
+          <div className="text-muted-foreground mb-4">
+            Installateur: <span className="font-semibold">Andreas Anlagenbau</span><br />
+            Vorname: <span className="font-semibold">Andreas</span><br />
+            Nachname: <span className="font-semibold">Anlagenbau</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -36,19 +40,19 @@ const MeineDaten = () => {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Vor- und Nachname</Label>
-                <Input id="name" value="Max Mustermann" readOnly />
+                <Input id="name" value="Peter Meier" readOnly />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">E-Mail</Label>
-                <Input id="email" type="email" value="max.mustermann@beispiel.de" readOnly />
+                <Input id="email" type="email" value="peter.meier@beispiel.de" readOnly />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="telefon">Telefon</Label>
-                <Input id="telefon" type="tel" value="+49 123 456789" readOnly />
+                <Input id="telefon" type="tel" value="+49 30 123456" readOnly />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="kundennummer">Kundennummer</Label>
-                <Input id="kundennummer" value="KD-2025-001234" readOnly />
+                <Input id="kundennummer" value="KD-2025-009876" readOnly />
               </div>
             </CardContent>
           </Card>
@@ -74,7 +78,7 @@ const MeineDaten = () => {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="strasse">Straße und Hausnummer</Label>
-                <Input id="strasse" value="Musterstraße 123" readOnly />
+                <Input id="strasse" value="Hauptstraße 26" readOnly />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -83,7 +87,7 @@ const MeineDaten = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="ort">Ort</Label>
-                  <Input id="ort" value="Musterstadt" readOnly />
+                  <Input id="ort" value="Berlin" readOnly />
                 </div>
               </div>
               <div className="space-y-2">
