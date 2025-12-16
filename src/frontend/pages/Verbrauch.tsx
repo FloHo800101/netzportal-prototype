@@ -169,7 +169,7 @@ const Verbrauch = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">2,85 MWh</div>
-              <p className="text-xs text-muted-foreground mt-1">Seit Inbetriebnahme</p>
+              <p className="text-xs text-muted-foreground mt-1">Seit Zählereinbau</p>
             </CardContent>
           </Card>
         </div>
@@ -209,7 +209,7 @@ const Verbrauch = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">3,2 MWh</div>
-              <p className="text-xs text-muted-foreground mt-1">Seit Inbetriebnahme</p>
+              <p className="text-xs text-muted-foreground mt-1">Seit Zählereinbau</p>
             </CardContent>
           </Card>
         </div>

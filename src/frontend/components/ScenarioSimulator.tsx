@@ -81,7 +81,7 @@ export default function ScenarioSimulator() {
           Szenariosimulation
         </CardTitle>
         <CardDescription>
-          3-Tage-Prognose für Wetter, Stromerzeugung und -verbrauch. Optimieren Sie den Zeitpunkt für energieintensive Geräte.
+          Für heute: Wetter, Stromerzeugung und -verbrauch. Optimieren Sie den Zeitpunkt für energieintensive Geräte.
         </CardDescription>
       </CardHeader>
       <CardContent>

@@ -82,6 +82,27 @@ export const notificationsByRole = {
         description: "Ihre Rechnung für November 2025 steht zum Download bereit.",
         date: "05.12.2025",
         read: true
+      },
+      {
+        id: 1003,
+        title: "Wartungsankündigung",
+        description: "Am 20.12.2025 findet eine planmäßige Wartung im Netzgebiet statt. Es kann zu kurzen Unterbrechungen kommen.",
+        date: "03.12.2025",
+        read: false
+      },
+      {
+        id: 1004,
+        title: "Information zu neuem Tarif",
+        description: "Ab Januar 2026 steht Ihnen ein neuer, günstigerer Stromtarif zur Verfügung.",
+        date: "01.12.2025",
+        read: true
+      },
+      {
+        id: 1005,
+        title: "Zählerwechsel angekündigt",
+        description: "Ihr Stromzähler wird am 22.12.2025 durch einen digitalen Zähler ersetzt.",
+        date: "30.11.2025",
+        read: false
       }
     ],
     postausgang: [

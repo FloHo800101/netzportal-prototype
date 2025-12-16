@@ -103,7 +103,7 @@ const Antraege = () => {
                   <Plus className="w-8 h-8 text-muted-foreground" />
                 </div>
                 <CardTitle>Weitere Antragsarten</CardTitle>
-                <CardDescription>Beantragen Sie Hausanschluss, Leistungsänderung oder Netzanschluss.</CardDescription>
+                <CardDescription>Beantragen Sie Hausanschluss, Leistungsänderung oder Baustrom.</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 gap-4">
@@ -117,7 +117,7 @@ const Antraege = () => {
                   </Button>
                   <Button variant="outline" className="h-auto py-4 flex flex-col gap-2">
                     <FileText className="w-6 h-6" />
-                    <span>Netzanschluss</span>
+                    <span>Baustrom</span>
                   </Button>
                 </div>
               </CardContent>

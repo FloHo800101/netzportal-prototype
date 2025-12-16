@@ -58,7 +58,8 @@ interface FormData {
 }
 
 const ANLAGENART_OPTIONEN = [
-  "PV (Photovoltaik)",
+  "PV Dach",
+  "PV Freifläche",
   "BHKW (Blockheizkraftwerk)",
   "Windenergie",
   "Wasserkraft",

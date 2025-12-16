@@ -51,8 +51,8 @@ const MeineDaten = () => {
                 <Input id="telefon" type="tel" value="+49 30 123456" readOnly />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="kundennummer">Kundennummer</Label>
-                <Input id="kundennummer" value="KD-2025-009876" readOnly />
+                <Label htmlFor="geburtsdatum">Geburtsdatum</Label>
+                <Input id="geburtsdatum" value="01.01.1980" readOnly />
               </div>
             </CardContent>
           </Card>

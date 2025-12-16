@@ -220,15 +220,10 @@ const Nachrichten = () => {
                 )}
               </p>
             </div>
-            <div className="flex gap-2">
-              {unreadCount > 0 && (
-                <Button variant="outline" onClick={markAllAsRead}>
-                  Alle als gelesen markieren
-                </Button>
-              )}
+            <div className="flex gap-2 items-center">
               <Dialog open={isComposeOpen} onOpenChange={setIsComposeOpen}>
                 <DialogTrigger asChild>
-                  <Button>
+                  <Button variant="default" className="shadow-md">
                     <Send className="w-4 h-4 mr-2" />
                     Neue Nachricht
                   </Button>
@@ -237,7 +232,7 @@ const Nachrichten = () => {
                   <DialogHeader>
                     <DialogTitle>Neue Nachricht senden</DialogTitle>
                     <DialogDescription>
-                      Senden Sie eine Nachricht an Ihren Installateur oder Kundenbetreuer
+                      Senden Sie eine Nachricht an Ihren Installateur oder Netzbetreiber
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 py-4">
@@ -249,7 +244,7 @@ const Nachrichten = () => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="installateur">Installateur (Müller GmbH)</SelectItem>
-                          <SelectItem value="kundenbetreuer">Kundenbetreuer</SelectItem>
+                          <SelectItem value="netzbetreiber">Netzbetreiber</SelectItem>
                         </SelectContent>
                       </SelectComponent>
                     </div>
@@ -303,6 +298,11 @@ const Nachrichten = () => {
                   </div>
                 </DialogContent>
               </Dialog>
+              {unreadCount > 0 && (
+                <Button variant="outline" onClick={markAllAsRead}>
+                  Alle als gelesen markieren
+                </Button>
+              )}
             </div>
           </div>
           

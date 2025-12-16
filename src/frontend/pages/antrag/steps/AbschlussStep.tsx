@@ -50,7 +50,7 @@ export const AbschlussStep = () => {
         </div>
         <p className="text-sm text-muted-foreground ml-7">
           Ihre erste Abrechnung wird voraussichtlich am <strong>15.03.2025</strong> erstellt und berücksichtigt alle
-          Einspeisungen seit Inbetriebnahme.
+          Einspeisungen seit Zählereinbau.
         </p>
       </div>
 
