@@ -6,6 +6,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Gauge, Bell, Calendar, TrendingUp, FileText, Newspaper, Video, Image, Link2 } from "lucide-react";
+import { projekte } from "./MeineProjekte";
 
 const Dashboard = () => {
   const { activeRole, user } = useAuth();
@@ -168,27 +169,19 @@ const Dashboard = () => {
         {activeRole === "installateur" && (
           <div className="mb-8 p-6 bg-card rounded-lg border">
             <h2 className="text-xl font-semibold mb-4">Ihre Installationsprojekte</h2>
-            <div className="space-y-3">
-              <div className="p-4 bg-muted/50 rounded-lg">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <p className="font-medium">Kunde: Anna Müller</p>
-                    <p className="text-sm text-muted-foreground">Mustergasse 123, 12345 Musterstadt</p>
-                  </div>
-                  <span className="px-2 py-1 bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 text-xs rounded">In Bearbeitung</span>
-                </div>
-                <p className="text-sm">PV-Anlage 10 kWp</p>
-              </div>
-              <div className="p-4 bg-muted/50 rounded-lg">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <p className="font-medium">Kunde: Max Mustermann</p>
-                    <p className="text-sm text-muted-foreground">Beispielweg 45, 54321 Beispielstadt</p>
-                  </div>
-                  <span className="px-2 py-1 bg-green-500/10 text-green-700 dark:text-green-400 text-xs rounded">Genehmigt</span>
-                </div>
-                <p className="text-sm">PV-Anlage 8 kWp</p>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {projekte.map((projekt) => (
+                <Card key={projekt.name}>
+                  <CardHeader>
+                    <CardTitle>{projekt.name}</CardTitle>
+                    <CardDescription>{projekt.beschreibung}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-sm mb-2">Status: <span className={`font-semibold ${projekt.status.color}`}>{projekt.status.text}</span></div>
+                    <div className="text-xs text-muted-foreground">{projekt.termin}</div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         )}

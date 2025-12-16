@@ -49,6 +49,8 @@ const MeineInstallateursdaten = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Projekte entfernt. Siehe neue Seite 'Meine Projekte'. */}
       </div>
     </div>
   );

@@ -1,8 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../components/ui/dialog";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { FileText, Home, Thermometer, Sun, Receipt, Download } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ChatBotTaskDialog } from "../components/ChatBotTaskDialog";
 
 // Hilfsfunktion für Label und Placeholder je Serviceart
@@ -162,12 +163,134 @@ const anschluesse: Anschluss[] = [
   }
 ];
 
+// ServiceanfrageDialog-Komponente ausgelagert
+const ServiceanfrageDialog: React.FC<{ anschluesse: Anschluss[] }> = ({ anschluesse }) => {
+  const [anschluss, setAnschluss] = useState(anschluesse[0]?.id || "");
+  const [serviceart, setServiceart] = useState("");
+  const [form, setForm] = useState({
+    name: "",
+    strasse: "",
+    konto: "",
+    betreiber: "",
+    betreiberAdresse: "",
+    betriebsweise: "",
+    nachricht: "",
+  });
+
+  useEffect(() => {
+    if (serviceart === "stammdaten") {
+      setForm(f => ({ ...f, name: "Max Mustermann", strasse: "Musterstraße 123", konto: "DE12 3456 7890 1234 5678 00" }));
+    } else if (serviceart === "betreiberwechsel") {
+      setForm(f => ({ ...f, betreiber: "Max Mustermann", betreiberAdresse: "Musterstraße 123" }));
+    } else if (serviceart === "betriebsweise") {
+      setForm(f => ({ ...f, betriebsweise: "Volleinspeisung" }));
+    }
+  }, [serviceart]);
+
+  return (
+    <form className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium mb-1">Anschluss wählen</label>
+        <select className="w-full border rounded px-3 py-2" value={anschluss} onChange={e => setAnschluss(Number(e.target.value))}>
+          {anschluesse.map((a) => (
+            <option key={a.id} value={a.id}>{a.typ} – {a.anschlussnummer}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-1">Serviceart</label>
+        <select className="w-full border rounded px-3 py-2" value={serviceart} onChange={e => setServiceart(e.target.value)}>
+          <option value="">Bitte wählen…</option>
+          <option value="stammdaten">Stammdatenänderung</option>
+          <option value="betreiberwechsel">Betreiberwechsel</option>
+          <option value="betriebsweise">Betriebsweise ändern</option>
+          <option value="stilllegung">Stilllegung/Modultausch</option>
+        </select>
+      </div>
+      {serviceart === "stammdaten" && (
+        <>
+          <input className="w-full border rounded px-3 py-2" placeholder="Name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+          <input className="w-full border rounded px-3 py-2" placeholder="Straße" value={form.strasse} onChange={e => setForm(f => ({ ...f, strasse: e.target.value }))} />
+          <input className="w-full border rounded px-3 py-2" placeholder="Kontoverbindung" value={form.konto} onChange={e => setForm(f => ({ ...f, konto: e.target.value }))} />
+        </>
+      )}
+      {serviceart === "betreiberwechsel" && (
+        <>
+          <input className="w-full border rounded px-3 py-2" placeholder="Neuer Betreiber" value={form.betreiber} onChange={e => setForm(f => ({ ...f, betreiber: e.target.value }))} />
+          <input className="w-full border rounded px-3 py-2" placeholder="Anschrift Betreiber" value={form.betreiberAdresse} onChange={e => setForm(f => ({ ...f, betreiberAdresse: e.target.value }))} />
+        </>
+      )}
+      {serviceart === "betriebsweise" && (
+        <input className="w-full border rounded px-3 py-2" placeholder="Betriebsweise (z. B. Volleinspeisung)" value={form.betriebsweise} onChange={e => setForm(f => ({ ...f, betriebsweise: e.target.value }))} />
+      )}
+      {serviceart === "stilllegung" && (
+        <div className="text-sm">
+          <a href="#" className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">Zum Antrag</a>
+        </div>
+      )}
+      <textarea className="w-full border rounded px-3 py-2" placeholder="Nachricht (optional)" value={form.nachricht} onChange={e => setForm(f => ({ ...f, nachricht: e.target.value }))} />
+      <DialogFooter>
+        <Button variant="default" type="submit">Absenden</Button>
+      </DialogFooter>
+    </form>
+  );
+};
 const MeineAnschluesse: React.FC = () => {
   const [openChatBotId, setOpenChatBotId] = useState<number | null>(null);
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold text-foreground">Meine Anschlüsse & Verträge</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-foreground">Meine Anschlüsse & Verträge</h1>
+        <div className="flex gap-2">
+          {/* Zählerstand melden Dialog */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="default" size="sm">
+                Zählerstand melden
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Zählerstand melden</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-2">
+                <label className="block text-sm font-medium mb-1">Zähler auswählen</label>
+                <select className="w-full border rounded px-3 py-2">
+                  {anschluesse.map((a) => (
+                    <option key={a.zaehlerNummer} value={a.zaehlerNummer}>
+                      {a.typ} – {a.zaehlerNummer}
+                    </option>
+                  ))}
+                </select>
+                <input type="number" placeholder="Zählerstand (kWh)" className="w-full border rounded px-3 py-2" />
+                <input type="date" className="w-full border rounded px-3 py-2" />
+                <div>
+                  <label className="block text-sm font-medium mb-1">Foto (optional)</label>
+                  <input type="file" accept="image/*" className="w-full" />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="default">Absenden</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          {/* Serviceanfrage Dialog */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                Serviceanfrage
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Serviceanfrage</DialogTitle>
+              </DialogHeader>
+              <ServiceanfrageDialog anschluesse={anschluesse} />
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {anschluesse.map((anschluss) => (
           <Card key={anschluss.id} className="relative pb-12">
@@ -177,7 +300,7 @@ const MeineAnschluesse: React.FC = () => {
                 <CardTitle className="text-lg">{anschluss.typ}</CardTitle>
                 <CardDescription className="text-xs">{anschluss.anschlussnummer}</CardDescription>
               </div>
-              <Badge className="ml-auto" variant="outline">{anschluss.status}</Badge>
+              <Badge className={`ml-auto ${anschluss.status === "Aktiv" ? "bg-green-100 text-green-700 border-green-300" : ""}`} variant="outline">{anschluss.status}</Badge>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="text-sm text-muted-foreground">{anschluss.adresse}</div>
@@ -193,7 +316,7 @@ const MeineAnschluesse: React.FC = () => {
                     <FileText className="w-4 h-4 text-muted-foreground" />
                     <span>{vertrag.typ} ({vertrag.vertragsNummer})</span>
                     <span className="ml-auto">{vertrag.beginn} – {vertrag.ende}</span>
-                    <Button variant="ghost" size="icon" className="ml-2" title="Download Vertrag">
+                    <Button variant="default" size="icon" className="ml-2" title="Download Vertrag">
                       <Download className="w-4 h-4" />
                     </Button>
                   </div>
@@ -206,8 +329,8 @@ const MeineAnschluesse: React.FC = () => {
                     <div key={rechnung.rechnungsNummer} className="flex items-center gap-2 text-xs mb-1">
                       <Receipt className="w-4 h-4 text-muted-foreground" />
                       <span>{rechnung.rechnungsNummer} ({rechnung.datum}):</span>
-                      <span>{rechnung.betrag}</span>
-                      <Button variant="ghost" size="icon" className="ml-2" title="Download Rechnung">
+                      <span className="ml-auto font-semibold">{rechnung.betrag}</span>
+                      <Button variant="default" size="icon" className="ml-2" title="Download Rechnung">
                         <Download className="w-4 h-4" />
                       </Button>
                     </div>
@@ -218,10 +341,13 @@ const MeineAnschluesse: React.FC = () => {
                 <div className="mt-2">
                   <div className="font-semibold text-xs mb-1">Gutschriften:</div>
                   {anschluss.gutschriften.map((gutschrift) => (
-                    <div key={gutschrift.monat} className="flex items-center gap-2 text-xs mb-1">
-                      <Receipt className="w-4 h-4 text-muted-foreground" />
+                    <div key={gutschrift.monat} className="flex items-center text-xs mb-1">
+                      <Receipt className="w-4 h-4 text-muted-foreground mr-2" />
                       <span>{gutschrift.monat}:</span>
-                      <span className="ml-auto">{gutschrift.betrag}</span>
+                      <span className="mx-auto font-semibold">{gutschrift.betrag}</span>
+                      <Button variant="default" size="icon" className="ml-2" title="Download Gutschrift">
+                        <Download className="w-4 h-4" />
+                      </Button>
                     </div>
                   ))}
                 </div>
@@ -250,5 +376,6 @@ const MeineAnschluesse: React.FC = () => {
 
   );
 };
+
 
 export default MeineAnschluesse;

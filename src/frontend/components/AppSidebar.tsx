@@ -22,7 +22,7 @@ type AppRole = "kunde" | "installateur" | "kundenbetreuer";
 const navigationItems = [
   // Installateur-Navigation
   { to: "/", icon: LayoutDashboard, label: "Dashboard", tooltip: "Dashboard", end: true, roles: ["installateur"] as AppRole[] },
-  { to: "/antraege/installateur", icon: FileText, label: "Meine Projekte", tooltip: "Meine Projekte (Anträge)", roles: ["installateur"] as AppRole[] },
+  { to: "/meine-projekte", icon: FileText, label: "Meine Projekte", tooltip: "Meine Projekte", roles: ["installateur"] as AppRole[] },
   { to: "/nachrichten", icon: Bell, label: "Benachrichtigungen", tooltip: "Benachrichtigungen", roles: ["installateur"] as AppRole[] },
   { to: "/termine", icon: Calendar, label: "Termine", tooltip: "Termine", roles: ["installateur"] as AppRole[] },
   { to: "/antraege", icon: FileText, label: "Anträge stellen", tooltip: "Anträge stellen", roles: ["installateur"] as AppRole[] },

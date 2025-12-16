@@ -29,6 +29,7 @@ import NeueAnlage from "./pages/antrag/NeueAnlage";
 import InstallerView from "./pages/antraege/InstallerView";
 import AdminSetup from "./pages/AdminSetup";
 import NotFound from "./pages/NotFound";
+import MeineProjekte from "./pages/MeineProjekte";
 
 const queryClient = new QueryClient();
 
@@ -74,6 +75,7 @@ const App = () => (
                             <Route path="/rechtliches" element={<Rechtliches />} />
                             <Route path="/antrag/neue-anlage" element={<NeueAnlage />} />
                             <Route path="/admin/setup" element={<AdminSetup />} />
+                            <Route path="/meine-projekte" element={<MeineProjekte />} />
                             <Route path="*" element={<NotFound />} />
                           </Routes>
                           <ChatBot />
